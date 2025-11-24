@@ -7,7 +7,7 @@ export default function Home() {
 
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load IMSI CSV once
+  // Load IMSI whitelist once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
@@ -27,7 +27,7 @@ export default function Home() {
   }, []);
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
-  const OCID_KEY = process.env.NEXT_PUBLIC_OCID_KEY || "test-key";
+  const OCID_KEY = process.env.NEXT_PUBLIC_OCID_KEY || "";
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -47,33 +47,42 @@ export default function Home() {
       );
       const places = await geoRes.json();
       if (places.length === 0) throw new Error("ZIP not found");
+
       const centerLat = parseFloat(places[0].lat);
       const centerLon = parseFloat(places[0].lon);
 
-      // 9-box fan-out (15 km total)
-      const offsetKm = 2.5;
+      // Ultra-safe 25-box fan-out — never exceeds 4 km²
+      const offsetKm = 1.8;     // 1.8 km per side → max 3.24 km²
+      const gridSize = 5;       // 5×5 = 25 boxes → ~18 km diameter
+
+      const kmPerDegLat = 111.32;
+      const kmPerDegLon = 40075 * Math.cos((centerLat * Math.PI) / 180) / 360;
+
+      const deltaLat = offsetKm / kmPerDegLat;
+      const deltaLon = offsetKm / kmPerDegLon;
+
       const allCells = [];
 
-      for (let r = -1; r <= 1; r++) {
-        for (let c = -1; c <= 1; c++) {
-          const kmPerDegLat = 111.32;
-          const kmPerDegLon = 40075 * Math.cos((centerLat * Math.PI) / 180) / 360;
-          const lat1 = centerLat + r * (offsetKm / kmPerDegLat);
-          const lon1 = centerLon + c * (offsetKm / kmPerDegLon);
-          const lat2 = lat1 + (offsetKm / kmPerDegLat);
-          const lon2 = lon1 + (offsetKm / kmPerDegLon);
+      for (let row = -(gridSize - 1) / 2; row <= (gridSize - 1) / 2; row++) {
+        for (let col = -(gridSize - 1) / 2; col <= (gridSize - 1) / 2; col++) {
+          const lat1 = centerLat + row * deltaLat;
+          const lon1 = centerLon + col * deltaLon;
+          const lat2 = lat1 + deltaLat;
+          const lon2 = lon1 + deltaLon;
 
           const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
 
-          const res = await fetch(url);
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data.cells)) allCells.push(...data.cells);
-          }
+          try {
+            const res = await fetch(url);
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data.cells)) allCells.push(...data.cells);
+            }
+          } catch {}
         }
       }
 
-      // Loose 4G check + your IMSI
+      // Loose 4G check — accepts untagged towers as likely 4G in cities
       for (const c of allCells) {
         const isLikely4G = !c.radio || c.radio === "LTE" || c.radio === "LTECATM";
         if (!isLikely4G) continue;
@@ -138,7 +147,6 @@ export default function Home() {
             color: "white",
             border: "none",
             borderRadius: 8,
-            cursor: "pointer",
           }}
         >
           {loading ? "Checking…" : "Check"}
@@ -160,12 +168,12 @@ export default function Home() {
 
           {result.providers?.length > 0 && (
             <div>
-              <h3>Providers in {zip} (not supported by TG3)</h3>
+              <h3>Providers in {zip} {result.supported ? "(TG3 supported)" : "(not supported by TG3)"}</h3>
               {result.counties?.length > 0 && <p><strong>County:</strong> {result.counties.join(", ")}</p>}
               <ul style={{ lineHeight: 1.7 }}>
                 {result.providers.map((p, i) => (
                   <li key={i}>
-                    {p.provider_name || "Unknown"} {p.provider_id && `(${p.provider_id})`}
+                    {p.provider_name || "Unknown} {p.provider_id && `(${p.provider_id})`}
                   </li>
                 ))}
               </ul>
