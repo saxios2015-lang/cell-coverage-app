@@ -8,11 +8,11 @@ export default function Home() {
   const [eu2Set, setEu2Set] = useState(new Set());
   const [us2Set, setUs2Set] = useState(new Set());
 
-  // Load IMSI CSV once
+  // Load IMSI_data_tg3.csv once when the page loads
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
-      .then((text) => {                     // ← this block is now NOT empty
+      .then((text) => {
         const eu2 = new Set();
         const us2 = new Set();
         const lines = text.split("\n");
@@ -31,14 +31,14 @@ export default function Home() {
         setEu2Set(eu2);
         setUs2Set(us2);
       })
-      .catch((e) => console.log("CSV load failed", e)));
+      .catch(() => console.log("Could not load IMSI CSV"));
   }, []);
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (zip.length !== 5) return;
+    if (zip.length !== 5 || isNaN(zip)) return;
 
     setLoading(true);
     setResult(null);
@@ -48,12 +48,12 @@ export default function Home() {
     let counties = [];
 
     try {
-      // OpenCelliD towers
-      const ocid = await fetch(`/api/cells?zip=${zip}`, { cache: "no-store" });
+      // 1. OpenCelliD towers
+      const ocidRes = await fetch(`/api/cells?zip=${zip}`, { cache: "no-store" });
       let cells = [];
-      if (ocid.ok) {
+      if (ocidRes.ok) {
         try {
-          const j = await ocid.json();
+          const j = await ocidRes.json();
           cells = Array.isArray(j.cells) ? j.cells : [];
         } catch {}
       }
@@ -70,26 +70,35 @@ export default function Home() {
         }
       }
 
+      // If we already know it works → stop here
       if (hasTg3Support) {
         setResult({
           supported: true,
           message: "Great news! Your TG3 will have service in this ZIP",
+          towers: cells.length,
         });
         setLoading(false);
         return;
       }
 
-      // FCC fallback
-      const fcc = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
-      if (fcc.ok) {
-        const data = await fcc.json();
+      // 2. FCC fallback via Render
+      const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
+      if (fccRes.ok) {
+        const data = await fccRes.json();
         providers = data.providers || [];
         counties = data.counties || [];
 
-        // quick name-based check (can be refined later)
-        const lowerNames = providers.map(p => (p.provider_name || "").toLowerCase());
+        // Simple name-based check for supported networks
+        const names = providers.map((p) => (p.provider_name || "").toLowerCase());
         if (
-          lowerNames.some(n => n.includes("at&t") || n.includes("verizon") || n.includes("t-mobile") || n.includes("us cellular") || n.includes("gci"))
+          names.some(
+            (n) =>
+              n.includes("at&t") ||
+              n.includes("verizon") ||
+              n.includes("t-mobile") ||
+              n.includes("us cellular") ||
+              n.includes("gci")
+          )
         ) {
           hasTg3Support = true;
         }
@@ -110,12 +119,60 @@ export default function Home() {
     setLoading(false);
   };
 
-  // UI stays exactly the same as the last working version you liked
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
       <h1>TG3 ZIP Coverage Checker</h1>
-      {/* rest of your UI – unchanged */}
-      {/* (copy the return block from the previous working version if you want the exact same look) */}
+
+      <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "30px 0" }}>
+        <input
+          value={zip}
+          onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
+          placeholder="Enter 5-digit ZIP"
+          style={{ padding: 12, fontSize: 18, borderRadius: 8, border: "1px solid #ccc", width: 240 }}
+        />
+        <button
+          type="submit"
+          disabled={loading || zip.length !== 5}
+          style={{
+            padding: "12px 32px",
+            fontSize: 18,
+            background: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: 8,
+            cursor: "pointer",
+          }}
+        >
+          {loading ? "Checking…" : "Check"}
+        </button>
+      </form>
+
+      {result && (
+        <div
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            margin: "40px 0 20px",
+            color: result.supported ? "#0a9928" : "#c22",
+          }}
+        >
+          {result.message}
+        </div>
+      )}
+
+      {result?.providers?.length > 0 && (
+        <div>
+          <h3>Providers found in {zip} (FCC data)</h3>
+          {result.counties?.length > 0 && <p><strong>County:</strong> {result.counties.join(", ")}</p>}
+          <ul style={{ lineHeight: 1.6 }}>
+            {result.providers.map((p, i) => (
+              <li key={i}>
+                {p.provider_name || "Unknown"} {p.provider_id && `(${p.provider_id})`}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </main>
   );
 }
