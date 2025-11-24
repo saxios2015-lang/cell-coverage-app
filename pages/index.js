@@ -52,7 +52,7 @@ export default function Home() {
       const centerLon = parseFloat(places[0].lon);
 
       // 2. Ultra-safe 25-box fan-out — never hits 4 km² limit
-      const offsetKm = 1.8;     // 1.8 km per side → max 3.24 km²
+      const offsetKm = 1.5;     // 1.5 km per side → max 3.24 km²
       const gridSize = 5;       // 5×5 = 25 boxes → ~18 km diameter
 
       const kmPerDegLat = 111.32;
