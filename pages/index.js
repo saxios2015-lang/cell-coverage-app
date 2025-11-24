@@ -7,7 +7,7 @@ export default function Home() {
 
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load your IMSI list once
+  // Load IMSI CSV once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
@@ -47,7 +47,8 @@ export default function Home() {
       );
       const places = await geoRes.json();
       if (places.length === 0) throw new Error("ZIP not found");
-      const centerLat = places[0];
+      const centerLat = parseFloat(places[0].lat);
+      const centerLon = parseFloat(places[0].lon);
 
       // 9-box fan-out (15 km total)
       const offsetKm = 2.5;
@@ -55,10 +56,12 @@ export default function Home() {
 
       for (let r = -1; r <= 1; r++) {
         for (let c = -1; c <= 1; c++) {
-          const lat1 = parseFloat(center.lat) + r * (offsetKm / 111.32);
-          const lon1 = parseFloat(center.lon) + c * (offsetKm / (40075 * Math.cos((parseFloat(center.lat) * Math.PI) / 180) / 360));
-          const lat2 = lat1 + (offsetKm / 111.32);
-          const lon2 = lon1 + (offsetKm / (40075 * Math.cos((parseFloat(center.lat) * Math.PI) / 180) / 360));
+          const kmPerDegLat = 111.32;
+          const kmPerDegLon = 40075 * Math.cos((centerLat * Math.PI) / 180) / 360;
+          const lat1 = centerLat + r * (offsetKm / kmPerDegLat);
+          const lon1 = centerLon + c * (offsetKm / kmPerDegLon);
+          const lat2 = lat1 + (offsetKm / kmPerDegLat);
+          const lon2 = lon1 + (offsetKm / kmPerDegLon);
 
           const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
 
@@ -70,10 +73,10 @@ export default function Home() {
         }
       }
 
-      // Only require 4G (LTE) + your exact PLMN
+      // Loose 4G check + your IMSI
       for (const c of allCells) {
-        const isLTE = c.radio === "LTE" || c.radio === "LTECATM";
-        if (!isLTE) continue;
+        const isLikely4G = !c.radio || c.radio === "LTE" || c.radio === "LTECATM";
+        if (!isLikely4G) continue;
 
         if (c.mcc && c.mnc) {
           const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
@@ -93,7 +96,7 @@ export default function Home() {
         return;
       }
 
-      // Fallback: show real providers
+      // FCC fallback
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
