@@ -11,7 +11,7 @@ export default function Home() {
   // THIS IS THE ONLY LINE THAT MATTERS RIGHT NOW
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
 
-  async function handleSearch(e: any) {
+  async function handleSearch(e) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -20,11 +20,11 @@ export default function Home() {
     setCountyNames([]);
 
     try {
-      // 1) OpenCelliD (still relative — Vercel will proxy it fine)
+      // 1) OpenCelliD (still works as relative path)
       const r1 = await fetch(`/api/cells?zip=${encodeURIComponent(zip)}`, {
         cache: "no-store",
       });
-      let cells: any[] = [];
+      let cells = [];
       try {
         const j1 = await r1.json();
         cells = Array.isArray(j1?.cells) ? j1.cells : [];
@@ -36,13 +36,12 @@ export default function Home() {
         return;
       }
 
-      // 2) FCC fallback — NOW USING YOUR REAL RENDER BACKEND
+      // 2) FCC fallback — now points to your real Render backend
       const r2 = await fetch(
         `${RENDER_BACKEND}/api/providers/by-zip?zip=${encodeURIComponent(zip)}`
       );
 
       if (!r2.ok) {
-        const txt = await r2.text();
         setMessage(`Failed to load providers (status ${r2.status}).`);
         setLoading(false);
         return;
@@ -51,9 +50,9 @@ export default function Home() {
       const j2 = await r2.json();
       setProviders(j2.providers || []);
       setCountyNames(j2.counties || []);
-      setMessage("No towers found via OpenCelliD. These providers serve the area:");
-    } catch (err: any) {
-      setMessage(`Error: ${err?.message || err}`);
+      setMessage("No towers via OpenCelliD. These providers serve the ZIP:");
+    } catch (err) {
+      setMessage(`Error: ${err.message || err}`);
     } finally {
       setLoading(false);
     }
@@ -64,7 +63,7 @@ export default function Home() {
       <h1>ZIP Coverage Check</h1>
       <form onSubmit={handleSearch} style={{ display: "flex", gap: 8 }}>
         <input
-          placeholder="Enter ZIP (e.g. 02139)"
+          placeholder="Enter ZIP (e.g. 02190)"
           value={zip}
           onChange={(e) => setZip(e.target.value)}
           style={{
@@ -78,11 +77,11 @@ export default function Home() {
         <button
           disabled={loading}
           style={{
-            padding: "10px 16px",
+            padding: "10px 20px",
             borderRadius: 8,
-            border: "1px solid #ddd",
-            background: loading ? "#eee" : "#0070f3",
+            background: loading ? "#ccc" : "#0070f3",
             color: "white",
+            border: "none",
             cursor: loading ? "default" : "pointer",
           }}
         >
@@ -94,12 +93,12 @@ export default function Home() {
 
       {towers.length > 0 && (
         <section style={{ marginTop: 20 }}>
-          <h3>Towers found via OpenCelliD</h3>
+          <h3>Towers found (OpenCelliD)</h3>
           <ul>
-            {towers.slice(0, 30).map((c: any, i) => (
+            {towers.slice(0, 30).map((c, i) => (
               <li key={i}>
-                {(c.radio || "Cell")} @ {Number(c.lat).toFixed(5)}, {Number(c.lon).toFixed(5)}{" "}
-                {c.mcc && c.mnc && `(MCC/MNC ${c.mcc}/${c.mnc})`}
+                {c.radio || "Cell"} @ {Number(c.lat).toFixed(5)}, {Number(c.lon).toFixed(5)}
+                {c.mcc && c.mnc && ` (MCC/MNC ${c.mcc}/${c.mnc})`}
               </li>
             ))}
           </ul>
@@ -111,7 +110,7 @@ export default function Home() {
           <h3>Providers serving {zip}</h3>
           {countyNames.length > 0 && <p>County: {countyNames.join(", ")}</p>}
           <ul>
-            {providers.map((p: any, i: number) => {
+            {providers.map((p, i) => {
               const name = p.provider_name || p.holding_company || "Unknown";
               const id = p.provider_id || "";
               return <li key={i}>{name} {id && `(${id})`}</li>;
