@@ -8,7 +8,7 @@ export default function Home() {
   const [eu2Set, setEu2Set] = useState(new Set());
   const [us2Set, setUs2Set] = useState(new Set());
 
-  // Load IMSI_data_tg3.csv once when the page loads
+  // Load IMSI CSV once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
@@ -46,9 +46,10 @@ export default function Home() {
     let hasTg3Support = false;
     let providers = [];
     let counties = [];
+    let fourGTowers = 0;
 
     try {
-      // 1. OpenCelliD towers
+      // 1. OpenCelliD towers (filter for 4G/LTE only)
       const ocidRes = await fetch(`/api/cells?zip=${zip}`, { cache: "no-store" });
       let cells = [];
       if (ocidRes.ok) {
@@ -58,8 +59,10 @@ export default function Home() {
         } catch {}
       }
 
-      if (cells.length > 0) {
-        for (const c of cells) {
+      // Count 4G towers and check IMSI match
+      for (const c of cells) {
+        if (c.radio && (c.radio === "LTE" || c.radio === "LTECATM")) {
+          fourGTowers++;
           if (c.mcc && c.mnc) {
             const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
             if (eu2Set.has(plmn) || us2Set.has(plmn)) {
@@ -70,25 +73,23 @@ export default function Home() {
         }
       }
 
-      // If we already know it works → stop here
       if (hasTg3Support) {
         setResult({
           supported: true,
-          message: "Great news! Your TG3 will have service in this ZIP",
-          towers: cells.length,
+          message: `Great news! Your TG3 will have 4G service in this ZIP (found ${fourGTowers} LTE tower${fourGTowers === 1 ? "" : "s"} matching our networks)`,
         });
         setLoading(false);
         return;
       }
 
-      // 2. FCC fallback via Render
+      // 2. FCC fallback
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
         providers = data.providers || [];
         counties = data.counties || [];
 
-        // Simple name-based check for supported networks
+        // Name-based check for supported networks (assuming they have 4G)
         const names = providers.map((p) => (p.provider_name || "").toLowerCase());
         if (
           names.some(
@@ -110,10 +111,11 @@ export default function Home() {
     setResult({
       supported: hasTg3Support,
       message: hasTg3Support
-        ? "Great news! Your TG3 will have service in this ZIP"
-        : "Unfortunately your TG3 won’t have coverage in this ZIP",
+        ? "Great news! Your TG3 will have 4G service in this ZIP"
+        : "Unfortunately your TG3 won't have 4G coverage in this ZIP (TG3 is 4G-only)",
       providers,
       counties,
+      fourGTowers,  // For display if needed
     });
 
     setLoading(false);
@@ -121,7 +123,7 @@ export default function Home() {
 
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      <h1>TG3 ZIP Coverage Checker</h1>
+      <h1>TG3 ZIP Coverage Checker (4G Only)</h1>
 
       <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "30px 0" }}>
         <input
