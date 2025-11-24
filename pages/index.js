@@ -13,92 +13,22 @@ export default function Home() {
       .then((r) => r.text())
       .then((text) => {
         const set = new Set();
-        const lines = text.split("\n");
-        for (const line of lines) {
+        text.split("\n").forEach((line) => {
           const cols = line.split(",");
-          if (cols.length < 7) continue;
+          if (cols.length < 7) return;
           const plmn = cols[0]?.trim();
           const group = cols[6]?.trim();
           if (plmn && plmn.length === 5 && (group === "EU 2" || group === "US 2")) {
             set.add(plmn);
           }
-        }
+        });
         setSupportedPlmns(set);
       })
-      .catch(() => console.log("IMSI CSV failed to load"));
+      .catch(() => console.log("Could not load IMSI list"));
   }, []);
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
   const OCID_KEY = process.env.NEXT_PUBLIC_OCID_KEY || "test-key";
-
-  // Haversine distance in km
-  function haversine(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(lat1 * Math.PI / 180) *
-        Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  // 25-box fan-out (30 km total) — never misses a tower
-  async function searchOcidWithFanout(zipCode) {
-    const geoRes = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zipCode}&countrycodes=us&limit=1`
-    );
-    const places = await geoRes.json();
-    if (places.length === 0) return { cells: [], centerLat: null, centerLon: null };
-
-    const centerLat = parseFloat(places[0].lat);
-    const centerLon = parseFloat(places[0].lon);
-
-    const offsetKm = 3.0; // each box = ~3 km side
-    const gridSize = 5;   // 5×5 = 25 boxes
-
-    const kmPerDegLat = 111.32;
-    const kmPerDegLon = 40075 * Math.cos((centerLat * Math.PI) / 180) / 360;
-
-    const deltaLat = offsetKm / kmPerDegLat;
-    const deltaLon = offsetKm / kmPerDegLon;
-
-    const allCells = [];
-
-    for (let row = -(gridSize - 1) / 2; row <= (gridSize - 1) / 2; row++) {
-      for (let col = -(gridSize - 1) / 2; col <= (gridSize - 1) / 2; col++) {
-        const lat1 = centerLat + row * deltaLat;
-        const lon1 = centerLon + col * deltaLon;
-        const lat2 = centerLat + (row + 1) * deltaLat;
-        const lon2 = centerLon + (col + 1) * deltaLon;
-
-        const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
-
-        try {
-          const res = await fetch(url);
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data.cells)) allCells.push(...data.cells);
-          }
-        } catch {}
-      }
-    }
-
-    // Remove duplicates
-    const seen = new Set();
-    const unique = [];
-    for (const c of allCells) {
-      const key = `${c.mcc}-${c.mnc}-${c.lac || c.tac || ""}-${c.cellid || c.cid || ""}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        unique.push(c);
-      }
-    }
-
-    return { cells: unique, centerLat, centerLon };
-  }
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -108,28 +38,48 @@ export default function Home() {
     setResult(null);
 
     let hasTg3Coverage = false;
-    let fccProviders = [];
-    let fccCounties = [];
+    let providers = [];
+    let counties = [];
 
     try {
-      // 1. OpenCelliD — strict 4G + IMSI + distance + confidence
-      const { cells, centerLat, centerLon } = await searchOcidWithFanout(zip);
+      // 1. Get ZIP center
+      const geoRes = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
+      );
+      const places = await geoRes.json();
+      if (places.length === 0) throw new Error("ZIP not found");
 
-      for (const c of cells) {
-        // Must be LTE
-        const is4G = c.radio === "LTE" || c.radio === "LTECATM";
-        if (!is4G) continue;
+      const centerLat = parseFloat(places[0].lat);
+      const centerLon = parseFloat(places[0].lon);
 
-        // Must have decent sample count (reliability)
-        if ((c.samples || 0) < 5) continue;
+      // 2. 9-box fan-out (15 km total) — perfect balance
+      const offsetKm = 2.5;
+      const allCells = [];
 
-        // Must be close (< 10 km)
-        if (centerLat && centerLon && c.lat && c.lon) {
-          const dist = haversine(centerLat, centerLon, c.lat, c.lon);
-          if (dist > 10) continue;
+      for (let r = -1; r <= 1; r++) {
+        for (let c = -1; c <= 1; c++) {
+          const lat1 = centerLat + r * (offsetKm / 111.32);
+          const lon1 = centerLon + c * (offsetKm / (40075 * Math.cos((centerLat * Math.PI) / 180) / 360));
+          const lat2 = lat1 + (offsetKm / 111.32);
+          const lon2 = lon1 + (offsetKm / (40075 * Math.cos((centerLat * Math.PI) / 180) / 360));
+
+          const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
+
+          try {
+            const res = await fetch(url);
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data.cells)) allCells.push(...data.cells);
+            }
+          } catch {}
         }
+      }
 
-        // Must match your IMSI list
+      // 3. Look for 4G + your IMSI — simple and reliable
+      for (const c of allCells) {
+        const isLikely4G = !c.radio || c.radio === "LTE" || c.radio === "LTECATM";
+        if (!isLikely4G) continue;
+
         if (c.mcc && c.mnc) {
           const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
           if (supportedPlmns.has(plmn)) {
@@ -139,6 +89,7 @@ export default function Home() {
         }
       }
 
+      // Great news → we're done
       if (hasTg3Coverage) {
         setResult({
           supported: true,
@@ -148,12 +99,12 @@ export default function Home() {
         return;
       }
 
-      // 2. No match → FCC fallback
+      // 4. No match → show real providers from FCC
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
-        fccProviders = data.providers || [];
-        fccCounties = data.counties || [];
+        providers = data.providers || [];
+        counties = data.counties || [];
       }
     } catch (err) {
       console.error(err);
@@ -161,9 +112,9 @@ export default function Home() {
 
     setResult({
       supported: false,
-      message: "Likely no 4G coverage for TG3 in your area (limited tower data)",
-      providers: fccProviders,
-      counties: fccCounties,
+      message: "No TG3 coverage found in this ZIP",
+      providers,
+      counties,
     });
 
     setLoading(false);
@@ -171,7 +122,7 @@ export default function Home() {
 
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      <h1>TG3 ZIP Coverage Checker (4G Only)</h1>
+      <h1>TG3 Coverage Checker (4G Only)</h1>
 
       <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "30px 0" }}>
         <input
