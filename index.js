@@ -8,7 +8,10 @@ export default function Home() {
   const [providers, setProviders] = useState([]);
   const [countyNames, setCountyNames] = useState([]);
 
-  async function handleSearch(e) {
+  // THIS IS THE ONLY LINE THAT MATTERS RIGHT NOW
+  const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
+
+  async function handleSearch(e: any) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -17,18 +20,15 @@ export default function Home() {
     setCountyNames([]);
 
     try {
-      // 1) Try OpenCelliD
+      // 1) OpenCelliD (still relative — Vercel will proxy it fine)
       const r1 = await fetch(`/api/cells?zip=${encodeURIComponent(zip)}`, {
         cache: "no-store",
       });
-      let cells = [];
+      let cells: any[] = [];
       try {
         const j1 = await r1.json();
         cells = Array.isArray(j1?.cells) ? j1.cells : [];
-      } catch {
-        // ignore parse errors from OCID (HTML/plain-text responses sometimes)
-      }
-
+      } catch {}
       if (cells.length > 0) {
         setTowers(cells);
         setMessage(`Found ${cells.length} cell${cells.length === 1 ? "" : "s"} near ${zip}.`);
@@ -36,23 +36,24 @@ export default function Home() {
         return;
       }
 
-      // 2) Fallback: providers by ZIP (FastAPI)
-      const r2 = await fetch(`/api/providers/by-zip?zip=${encodeURIComponent(zip)}`, {
-        cache: "no-store",
-      });
+      // 2) FCC fallback — NOW USING YOUR REAL RENDER BACKEND
+      const r2 = await fetch(
+        `${RENDER_BACKEND}/api/providers/by-zip?zip=${encodeURIComponent(zip)}`
+      );
+
       if (!r2.ok) {
         const txt = await r2.text();
-        setMessage(`No, no coverage found. Also failed to load providers (status ${r2.status}). ${txt}`);
+        setMessage(`Failed to load providers (status ${r2.status}).`);
         setLoading(false);
         return;
       }
 
       const j2 = await r2.json();
-      setProviders(Array.isArray(j2.providers) ? j2.providers : []);
-      setCountyNames(Array.isArray(j2.counties) ? j2.counties : []);
-      setMessage("No, no coverage found. These are the providers in your zip.");
-    } catch (err) {
-      setMessage(`Error: ${err?.message || String(err)}`);
+      setProviders(j2.providers || []);
+      setCountyNames(j2.counties || []);
+      setMessage("No towers found via OpenCelliD. These providers serve the area:");
+    } catch (err: any) {
+      setMessage(`Error: ${err?.message || err}`);
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,6 @@ export default function Home() {
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui" }}>
       <h1>ZIP Coverage Check</h1>
-
       <form onSubmit={handleSearch} style={{ display: "flex", gap: 8 }}>
         <input
           placeholder="Enter ZIP (e.g. 02139)"
@@ -81,7 +81,8 @@ export default function Home() {
             padding: "10px 16px",
             borderRadius: 8,
             border: "1px solid #ddd",
-            background: loading ? "#eee" : "#f5f5f5",
+            background: loading ? "#eee" : "#0070f3",
+            color: "white",
             cursor: loading ? "default" : "pointer",
           }}
         >
@@ -89,49 +90,31 @@ export default function Home() {
         </button>
       </form>
 
-      {message && <p style={{ marginTop: 16 }}>{message}</p>}
+      {message && <p style={{ marginTop: 20, fontWeight: "bold" }}>{message}</p>}
 
-      {/* Towers list (if OpenCelliD returned anything) */}
       {towers.length > 0 && (
-        <section style={{ marginTop: 16 }}>
-          <h3>Towers near {zip}</h3>
-          <p style={{ fontSize: 12, color: "#666" }}>Tower data © OpenCelliD (ODbL)</p>
+        <section style={{ marginTop: 20 }}>
+          <h3>Towers found via OpenCelliD</h3>
           <ul>
-            {towers.slice(0, 30).map((c, i) => (
+            {towers.slice(0, 30).map((c: any, i) => (
               <li key={i}>
-                {(c.radio || "Cell")} @ {Number(c.lat).toFixed(5)},{Number(c.lon).toFixed(5)}
-                {c.mcc != null && c.mnc != null ? ` (MCC/MNC ${c.mcc}/${c.mnc})` : ""}
+                {(c.radio || "Cell")} @ {Number(c.lat).toFixed(5)}, {Number(c.lon).toFixed(5)}{" "}
+                {c.mcc && c.mnc && `(MCC/MNC ${c.mcc}/${c.mnc})`}
               </li>
             ))}
           </ul>
-          {towers.length > 30 && <p>…and {towers.length - 30} more</p>}
         </section>
       )}
 
-      {/* Providers list (fallback) — supports both numbers and objects */}
-      {Array.isArray(providers) && providers.length > 0 && (
-        <section style={{ marginTop: 16 }}>
-          <h3>Providers in {zip}</h3>
-          {Array.isArray(countyNames) && countyNames.length > 0 && (
-            <p>County: {countyNames.join(", ")}</p>
-          )}
+      {providers.length > 0 && (
+        <section style={{ marginTop: 20 }}>
+          <h3>Providers serving {zip}</h3>
+          {countyNames.length > 0 && <p>County: {countyNames.join(", ")}</p>}
           <ul>
-            {providers.map((p, i) => {
-              const isNumber = typeof p === "number";
-              const id = isNumber ? p : (p?.provider_id ?? p?.id);
-              const name =
-                !isNumber
-                  ? (p?.provider_name ||
-                     p?.holding_company ||
-                     p?.brand_name ||
-                     p?.doing_business_as)
-                  : null;
-
-              const label = name
-                ? `${name}${id ? ` (${id})` : ""}`
-                : (id != null ? String(id) : "Unknown provider");
-
-              return <li key={i}>{label}</li>;
+            {providers.map((p: any, i: number) => {
+              const name = p.provider_name || p.holding_company || "Unknown";
+              const id = p.provider_id || "";
+              return <li key={i}>{name} {id && `(${id})`}</li>;
             })}
           </ul>
         </section>
