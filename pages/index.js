@@ -7,7 +7,7 @@ export default function Home() {
 
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load your IMSI list once
+  // Load your IMSI whitelist once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
@@ -24,10 +24,63 @@ export default function Home() {
           }
         }
         setSupportedPlmns(set);
-      });
+      })
+      .catch(() => console.log("IMSI CSV failed to load"));
   }, []);
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
+  const OCID_KEY = process.env.NEXT_PUBLIC_OCID_KEY || "test-key"; // ← set real key in Vercel
+
+  // 25-box fan-out = 30 km diameter, never hits OCID 4 km² limit
+  async function searchOcidWithFanout(zipCode) {
+    const geoRes = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zipCode}&countrycodes=us&limit=1`
+    );
+    const places = await geoRes.json();
+    if (places.length === 0) return [];
+
+    const centerLat = parseFloat(places[0].lat);
+    const centerLon = parseFloat(places[0].lon);
+
+    const offsetKm = 3.0;                         // 3 km per side
+    const gridSize = 5;                           // 5×5 = 25 boxes
+
+    const kmPerDegLat = 111.32;
+    const kmPerDegLon = 40075 * Math.cos((centerLat * Math.PI) / 180) / 360;
+
+    const deltaLat = offsetKm / kmPerDegLat;
+    const deltaLon = offsetKm / kmPerDegLon;
+
+    const allCells = [];
+
+    for (let row = -(gridSize - 1) / 2; row <= (gridSize - 1) / 2; row++) {
+      for (let col = -(gridSize - 1) / 2; col <= (gridSize - 1) / 2; col++) {
+        const lat1 = centerLat + row * deltaLat;
+        const lon1 = centerLon + col * deltaLon;
+        const lat2 = centerLat + (row + 1) * deltaLat;
+        const lon2 = centerLon + (col + 1) * deltaLon;
+
+        const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
+
+        try {
+          const res = await fetch(url);
+          if (await res.json()).cells?.forEach((c) => allCells.push(c));
+        } catch {}
+      }
+    }
+
+    // Deduplicate by unique cell ID
+    const seen = new Set();
+    const unique = [];
+    for (const c of allCells) {
+      const key = `${c.mcc}-${c.mnc}-${c.lac || c.tac || ""}-${c.cellid || c.cid || ""}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(c);
+      }
+    }
+    return unique;
+  }
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -41,22 +94,15 @@ export default function Home() {
     let fccCounties = [];
 
     try {
-      // 1. OpenCelliD — only 4G + supported IMSI = success
-      const ocidRes = await fetch(`/api/cells?zip=${zip}`, { cache: "no-store" });
-      let cells = [];
-      if (ocidRes.ok) {
-        try {
-          const j = await ocidRes.json();
-          cells = Array.isArray(j.cells) ? j.cells : [];
-        } catch {}
-      }
+      // 1. OpenCelliD — 25-box fan-out
+      const cells = await searchOcidWithFanout(zip);
 
-      for (const cell of cells) {
-        const is4G = cell.radio === "LTE" || cell.radio === "LTECATM";
+      for (const c of cells) {
+        const is4G = c.radio === "LTE" || c.radio === "LTECATM";
         if (!is4G) continue;
 
-        if (cell.mcc && cell.mnc) {
-          const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
+        if (c.mcc && c.mnc) {
+          const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
           if (supportedPlmns.has(plmn)) {
             hasTg3Coverage = true;
             break;
@@ -64,7 +110,7 @@ export default function Home() {
         }
       }
 
-      // If we found 4G + supported → we're done
+      // If we found a match → green message and stop
       if (hasTg3Coverage) {
         setResult({
           supported: true,
@@ -74,7 +120,7 @@ export default function Home() {
         return;
       }
 
-      // 2. No TG3 coverage → fall back to FCC to show who IS there
+      // 2. No match → fall back to FCC
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
@@ -138,12 +184,12 @@ export default function Home() {
 
           {result.providers?.length > 0 && (
             <div>
-              <h3>Providers in {zip} (but not supported by TG3)</h3>
+              <h3>Providers in {zip} (not supported by TG3)</h3>
               {result.counties?.length > 0 && <p><strong>County:</strong> {result.counties.join(", ")}</p>}
               <ul style={{ lineHeight: 1.7 }}>
                 {result.providers.map((p, i) => (
                   <li key={i}>
-                    {p.provider_name || "Unknown provider"} {p.provider_id && `(${p.provider_id})`}
+                    {p.provider_name || "Unknown"} {p.provider_id && `(${p.provider_id})`}
                   </li>
                 ))}
               </ul>
