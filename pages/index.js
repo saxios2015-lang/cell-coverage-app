@@ -3,51 +3,56 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState(null);
 
-  // These will be filled once at startup
-  const [supportedEu2, setSupportedEu2] = useState<Set<string>>(new Set());
-  const [supportedUs2, setSupportedUs2] = useState<Set<string>>(new Set());
+  // These hold the supported PLMNs from your CSV
+  const [eu2Set, setEu2Set] = useState(new Set());
+  const [us2Set, setUs2Set] = useState(new Set());
 
   // Load the CSV once when the page loads
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
       .then((text) => {
+        const eu2 = new Set();
+        const us2 = new Set();
         const lines = text.split("\n");
-        const eu2 = new Set<string>();
-        const us2 = new Set<string>();
 
         for (const line of lines) {
           const cols = line.split(",");
           if (cols.length < 7) continue;
-          const plmn = cols[0].trim();
-          const imsiProvider = cols[6]?.trim();
+          const plmn = cols[0]?.trim();           // e.g. 310410
+          const imsiProvider = cols[6]?.trim();   // EU 2 or US 2
 
-          if (!plmn || plmn.length !== 5) continue;
-
-          if (imsiProvider === "EU 2") eu2.add(plmn);
-          if (imsiProvider === "US 2") us2.add(plmn);
+          if (plmn && plmn.length === 5 && (imsiProvider === "EU 2" || imsiProvider === "US 2")) {
+            if (imsiProvider === "EU 2") eu2.add(plmn);
+            if (imsiProvider === "US 2") us2.add(plmn);
+          }
         }
 
-        setSupportedEu2(eu2);
-        setSupportedUs2(us2);
-      });
+        setEu2Set(eu2);
+        setUs2Set(us2);
+      })
+      .catch(() => console.log("CSV not found – running without IMSI check"));
   }, []);
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
 
-  async function handleSearch(e: React.FormEvent) {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    if (!zip.trim()) return;
+    if (!zip.trim() || zip.length !== 5) return;
 
     setLoading(true);
     setResult(null);
 
+    let hasTg3Support = false;
+    let foundProviders = [];
+    let foundCounties = [];
+
     try {
-      // 1. Try OpenCelliD
+      // 1. Try OpenCelliD for towers
       const ocidRes = await fetch(`/api/cells?zip=${zip}`, { cache: "no-store" });
-      let cells: any[] = [];
+      let cells = [];
       if (ocidRes.ok) {
         try {
           const j = await ocidRes.json();
@@ -55,95 +60,83 @@ export default function Home() {
         } catch {}
       }
 
-      // Check if any tower matches our supported IMSI groups
-      let hasTg3Support = false;
       if (cells.length > 0) {
         for (const c of cells) {
-          if (!c.mcc || !c.mnc) continue;
-          const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
-          if (supportedEu2.has(plmn) || supportedUs2.has(plmn)) {
-            hasTg3Support = true;
-            break;
+          if (c.mcc && c.mnc) {
+            const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
+            if (eu2Set.has(plmn) || us2Set.has(plmn)) {
+              hasTg3Support = true;
+              break;
+            }
           }
         }
       }
 
+      // If we already know it works, stop here
       if (hasTg3Support) {
         setResult({
           supported: true,
           message: "Great news! Your TG3 will have service in this ZIP",
           towers: cells.length,
-          providers: [],
         });
         setLoading(false);
         return;
       }
 
-      // 2. No towers or no match → fall back to our Render FCC fallback
+      // 2. Fallback to Render (FCC data)
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
-      if (!fccRes.ok) {
-        setResult({
-          supported: false,
-          message: "Unfortunately your TG3 won’t have coverage in this ZIP",
-        });
-        setLoading(false);
-        return;
-      }
+      if (fccRes.ok) {
+        const data = await fccRes.json();
+        foundProviders = data.providers || [];
+        foundCounties = data.counties || [];
 
-      const data = await fccRes.json();
-
-      // Check if any of the returned providers belongs to EU2 or US2
-      for (const p of data.providers) {
-        const name = p.provider_name?.toLowerCase() || "";
-        // Very rough name matching – you can improve later
-        const matched = Array.from(supportedEu2).concat(Array.from(supportedUs2))
-          .some(plmn => {
-            const row = lines.find(l => l.startsWith(plmn));
-            if (!row) return false;
-            const operator = row.split(",")[5]?.toLowerCase() || "";
-            return operator.includes(name) || name.includes(operator);
-          });
-        if (matched) {
-          hasTg3Support = true;
-          break;
+        // Very simple name-based fallback check (can be improved later)
+        for (const p of foundProviders) {
+          const name = (p.provider_name || "").toLowerCase();
+          // Quick check against known TG3 partners
+          if (
+            name.includes("at&t") ||
+            name.includes("verizon") ||
+            name.includes("t-mobile") ||
+            name.includes("us cellular") ||
+            name.includes("gci")
+          ) {
+            hasTg3Support = true;
+          }
         }
       }
-
-      setResult({
-        supported: hasTg3Support,
-        message: hasTg3Support
-          ? "Great news! Your TG3 will have service in this ZIP"
-          : "Unfortunately your TG3 won’t have coverage in this ZIP",
-        providers: data.providers || [],
-        counties: data.counties || [],
-      });
-
     } catch (err) {
-      setResult({
-        supported: false,
-        message: "Something went wrong – try again",
-      });
-    } finally {
-      setLoading(false);
+      console.error(err);
     }
-  }
+
+    setResult({
+      supported: hasTg3Support,
+      message: hasTg3Support
+        ? "Great news! Your TG3 will have service in this ZIP"
+        : "Unfortunately your TG3 won’t have coverage in this ZIP",
+      providers: foundProviders,
+      counties: foundCounties,
+    });
+
+    setLoading(false);
+  };
 
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      <h1>ZIP Coverage Check for TG3</h1>
-      <form onSubmit={handleSearch} style={{ display: "flex", gap: 10, marginBottom: 30 }}>
+      <h1>TG3 ZIP Coverage Checker</h1>
+
+      <form onSubmit={handleSearch} style={{ display: "flex", gap: 10, margin: "30px 0" }}>
         <input
           value={zip}
-          onChange={(e) => setZip(e.target.value)}
+          onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
           placeholder="Enter 5-digit ZIP"
-          maxLength={5}
-          style={{ padding: 12, fontSize: 18, borderRadius: 8, border: "1px solid #ccc", width: 200 }}
+          style={{ padding: 12, fontSize: 18, borderRadius: 8, border: "1px solid #ccc", width: 220 }}
         />
         <button
           type="submit"
           disabled={loading || zip.length !== 5}
           style={{
-            padding: "12px 24px",
+            padding: "12px 30px",
             fontSize: 18,
             background: "#0070f3",
             color: "white",
@@ -157,7 +150,14 @@ export default function Home() {
       </form>
 
       {result && (
-        <div style={{ fontSize: 20, fontWeight: "bold", marginBottom: 20, color: result.supported ? "green" : "red" }}>
+        <div
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            margin: "30px 0",
+            color: result.supported ? "green" : "red",
+          }}
+        >
           {result.message}
         </div>
       )}
@@ -165,9 +165,9 @@ export default function Home() {
       {result?.providers?.length > 0 && (
         <div>
           <h3>Providers found in {zip} (FCC data)</h3>
-          {result.counties?.length > 0 && <p>County: {result.counties.join(", ")}</p>}
+          {result.counties?.length > 0 && <p><strong>County:</strong> {result.counties.join(", ")}</p>}
           <ul>
-            {result.providers.map((p: any, i: number) => (
+            {result.providers.map((p, i) => (
               <li key={i}>
                 {p.provider_name || "Unknown"} {p.provider_id && `(${p.provider_id})`}
               </li>
