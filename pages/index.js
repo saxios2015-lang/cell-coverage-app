@@ -40,67 +40,6 @@ export default function Home() {
     let counties = [];
 
     try {
-      // Get ZIP center
-      const geoRes = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
-      );
-      const places = await geoRes.json();
-      if (places.length === 0) throw new Error("ZIP not found");
-
-      const centerLat = parseFloat(places[0].lat);
-      const centerLon = parseFloat(places[0].lon);
-
-      // 25-box fan-out — 1.5 km = 100% safe
-      const offsetKm = 1.5;
-      const gridSize = 5;
-
-      const kmPerDegLat = 111.32;
-      const kmPerDegLon = 40075 * Math.cos((centerLat * Math.PI) / 180) / 360;
-
-      const deltaLat = offsetKm / kmPerDegLat;
-      const deltaLon = offsetKm / kmPerDegLon;
-
-      const allCells = [];
-
-      for (let row = -(gridSize - 1) / 2; row <= (gridSize - 1) / 2; row++) {
-        for (let col = -(gridSize - 1) / 2; col <= (gridSize - 1) / 2; col++) {
-          const lat1 = centerLat + row * deltaLat;
-          const lon1 = centerLon + col * deltaLon;
-          const lat2 = lat1 + deltaLat;
-          const lon2 = lon1 + deltaLon;
-
-          const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
-
-          try {
-            const res = await fetch(url);
-            if (res.ok) {
-              const data = await res.json();
-              if (Array.isArray(data.cells)) allCells.push(...data.cells);
-            }
-          } catch {}
-        }
-      }
-
-      // NO RADIO FILTER — any tower with your IMSI = coverage
-      for (const c of allCells) {
-        if (c.mcc && c.mnc) {
-          const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
-          if (supportedPlmns.has(plmn)) {
-            hasTg3Coverage = true;
-            break;
-          }
-        }
-      }
-
-      if (hasTg3Coverage) {
-        setResult({
-          supported: true,
-          message: "Great news! Your TG3 will have 4G coverage in this ZIP",
-        });
-        setLoading(false);
-        return;
-      }
-
       // FCC fallback
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
@@ -108,13 +47,65 @@ export default function Home() {
         providers = data.providers || [];
         counties = data.counties || [];
       }
+
+      // OpenCelliD fan-out (9 boxes for speed, recalculate lon per box)
+      if (OCID_KEY) {
+        const geo = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
+        );
+        const place = (await geo.json())[0];
+        if (place) {
+          const lat = parseFloat(place.lat);
+          const lon = parseFloat(place.lon);
+          const d = 2.5;
+
+          let allCells = 0;
+          for (let r = -1; r <= 1; r++) {
+            for (let c = -1; c <= 1; c++) {
+              // Recalculate lon delta for this box's lat
+              const kmPerDegLon = 40075 * Math.cos(((lat + r * (d / 111.32)) * Math.PI) / 180) / 360;
+              const lat1 = lat + r * (d / 111.32);
+              const lon1 = lon + c * (d / kmPerDegLon);
+              const lat2 = lat1 + (d / 111.32);
+              const lon2 = lon1 + (d / kmPerDegLon);
+
+              const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
+              const res = await fetch(url);
+              if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data.cells)) {
+                  allCells += data.cells.length;
+                  for (const cell of data.cells) {
+                    const isLTE = !cell.radio || cell.radio === "LTE" || cell.radio === "LTECATM" || cell.radio === "NR";
+                    if (!isLTE) continue;
+                    if (cell.mcc && cell.mnc) {
+                      const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
+                      if (supportedPlmns.has(plmn)) {
+                        hasTg3Coverage = true;
+                        break;
+                      }
+                    }
+                  }
+                }
+              } else {
+                console.log("OCID error:", await res.text());  // Log errors
+              }
+              if (hasTg3Coverage) break;
+            }
+            if (hasTg3Coverage) break;
+          }
+          console.log(`OCID found ${allCells} towers for ${zip}`);  // Debug
+        }
+      }
     } catch (err) {
       console.error(err);
     }
 
     setResult({
-      supported: false,
-      message: "No TG3 coverage found in this ZIP",
+      supported: hasTg3Coverage,
+      message: hasTg3Coverage
+        ? "Great news! Your TG3 will have 4G coverage in this ZIP"
+        : "No TG3 coverage found in this ZIP",
       providers,
       counties,
     });
