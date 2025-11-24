@@ -81,7 +81,7 @@ export default function Home() {
         }
       }
 
-      // THIS LINE IS THE WINNER — accept any tower with your IMSI
+      // NO RADIO FILTER — any tower with your IMSI = coverage
       for (const c of allCells) {
         if (c.mcc && c.mnc) {
           const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
