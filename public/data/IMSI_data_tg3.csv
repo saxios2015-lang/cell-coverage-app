@@ -1,0 +1,767 @@
+						
+			Provider	Alias		
+			Melita	EU 2		
+			Telefonica EUROPE	EU 4		
+			US Cellular	US 2		
+						
+						
+						
+PLMN	MCCMNC	Country	Region	Continent	Operator	IMSI Provider
+ALBAM	27601	Albania	Europe	Europe	One Albania	EU 2
+ALBVF	27602	Albania	Europe	Europe	Vodafone Albania	EU 2
+ANDMA	21303	Andorra	Europe	Europe	Andorra Telecom	EU 2
+ARGTP	72234	Argentina	South America	South America	Personal Argentina	EU 2
+ARM 1.00	28301	Armenia	CIS	Asia	Beeline Armenia	EU 2
+AUSOP	50502	Australia	APAC	Oceania	Optus Communications	EU 2
+AUSVF	50503	Australia	APAC	Oceania	TPG Telecom Australia	EU 2
+AUTCA	23205	Austria	Europe	Europe	3 Austria	EU 2
+AUTPT	23201	Austria	Europe	Europe	A1 Austria	EU 2
+AUTMM	23203	Austria	Europe	Europe	T-Mobile Austria	EU 2
+BELKO	20620	Belgium	Europe	Europe	Base Belgium	EU 2
+BELTB	20601	Belgium	Europe	Europe	Proximus Belgium	EU 2
+BELMO	20610	Belgium	Europe	Europe	Orange Belgium	EU 2
+BOLTE	73603	Bolivia	South America	South America	Tigo Bolivia	EU 2
+BIHPT	21890	Bosnia&Herzegovina	Europe	Europe	BH Bosnia and Herzegovina	EU 2
+BGR01	28401	Bulgaria	Europe	Europe	Mtel Bulgaria	EU 2
+BGRCM	28405	Bulgaria	Europe	Europe	Yettel Bulgaria	EU 2
+BGRVA	28403	Bulgaria	Europe	Europe	Vivacom Bulgaria	EU 2
+CANBM	302610	Canada	North America	North America	Bell Canada	EU 2
+CANRW	302720	Canada	North America	North America	Rogers Canada	EU 2
+CANTS	302220	Canada	North America	North America	Telus Canada	EU 2
+CHLMV	73001	Chile	South America	South America	Entel Chile	EU 2
+CHLTM	73002	Chile	South America	South America	Movistar Chile	EU 2
+CHNDX	46011	China	APAC	Asia	China Telecom	EU 2
+CHNCT	46000	China	APAC	Asia	China Mobile	EU 2
+COLCO	732111	Colombia	South America	South America	Tigo Colombia	EU 2
+CODVC	63001	Congo Drc	Africa	Africa	Vodacom Congo, DR	EU 2
+HRVT2	21902	Croatia	Europe	Europe	Telemach Croatia	EU 2
+HRVCN	21901	Croatia	Europe	Europe	T-Mobile Croatia	EU 2
+HRVVI	21910	Croatia	Europe	Europe	VIPnet Croatia	EU 2
+CYPCT	28001	Cyprus	Europe	Europe	Cyta Cyprus	EU 2
+CYPSC	28010	Cyprus	Europe	Europe	Epic Cyprus	EU 2
+CYPPT	28020	Cyprus	Europe	Europe	PrimeTel Cyprus	EU 2
+CZEET	23002	Czech Republic	Europe	Europe	O2 Czechia	EU 2
+CZERM	23001	Czech Republic	Europe	Europe	T-Mobile Czechia	EU 2
+CZECM	23003	Czech Republic	Europe	Europe	Vodafone Czechia	EU 2
+DNKHU	23806	Denmark	Europe	Europe	3 Denmark	EU 2
+DNKTD	23801	Denmark	Europe	Europe	Nuuday Denmark	EU 2
+DNKIA	23820	Denmark	Europe	Europe	Telia Denmark	EU 2
+ECUOT	74000	Ecuador	South America	South America	Movistar Ecuador	EU 2
+EGYAR	60201	Egypt	Middle East	Africa	Orange Egypt	EU 2
+SLVTM	70603	El Salvador	LATAM	Central America	Tigo El Salvador	EU 2
+ESTRE	24802	Estonia	Europe	Europe	Elisa Estonia	EU 2
+ESTRB	24803	Estonia	Europe	Europe	Tele2 Estonia	EU 2
+ESTEM	24801	Estonia	Europe	Europe	Telia Estonia	EU 2
+FJIVF	54201	Fiji	APAC	Oceania	Vodafone Fiji	EU 2
+FINAM	24414	Finland	Europe	Europe	Alands Finland	EU 2
+FINRL	24405	Finland	Europe	Europe	Elisa Finland	EU 2
+FINTF	24491	Finland	Europe	Europe	Telia Finland	EU 2
+FRAF1	20801	France	Europe	Europe	Orange France	EU 2
+FRAF3	20820	France	Europe	Europe	Bouygues France	EU 2
+GEOMT	28204	Georgia	CIS	Asia	Beeline Georgia	EU 2
+DEUE2	26207	Germany	Europe	Europe	O2 Germany	EU 2
+DEUD1	26201	Germany	Europe	Europe	T-Mobile Germany	EU 2
+DEUD2	26202	Germany	Europe	Europe	Vodafone Germany	EU 2
+GHAGT	62002	Ghana	Africa	Africa	Vodafone Ghana 	EU 2
+GIBGT	26601	Gibraltar	Europe	Europe	Gibtelecom Gibraltar	EU 2
+GRCCO	20201	Greece	Europe	Europe	Cosmote Greece	EU 2
+GRCPF	20205	Greece	Europe	Europe	Vodafone Greece	EU 2
+GRLTG	29001	Greenland	North America	North America	Tele Greenland	EU 2
+GTMCM	70402	Guatemala	LATAM	Central America	Tigo Guatemala	EU 2
+GBRGT	23455	Guernsey	Europe	Europe	Sure Guernsey	EU 2
+HND02	70802	Honduras	LATAM	Central America	Tigo Honduras	EU 2
+HUNH2	21630	Hungary	Europe	Europe	T-Mobile Hungary	EU 2
+HUNVR	21670	Hungary	Europe	Europe	Vodafone Hungary	EU 2
+ISLNO	27411	Iceland	Europe	Europe	Nova Iceland	EU 2
+ISLPS	27401	Iceland	Europe	Europe	Siminn Iceland	EU 2
+INDAT	40410	India	APAC	Asia	Airtel India	EU 2
+INDA1	40492	India	APAC	Asia	Airtel India	EU 2
+INDA2	40490	India	APAC	Asia	Airtel India	EU 2
+INDA3	40498	India	APAC	Asia	Airtel India	EU 2
+INDA4	40494	India	APAC	Asia	Airtel India	EU 2
+INDA5	40496	India	APAC	Asia	Airtel India	EU 2
+INDA6	40497	India	APAC	Asia	Airtel India	EU 2
+INDA7	40495	India	APAC	Asia	Airtel India	EU 2
+INDA8	40493	India	APAC	Asia	Airtel India	EU 2
+INDA9	40402	India	APAC	Asia	Airtel India	EU 2
+INDBL	40403	India	APAC	Asia	Airtel India	EU 2
+INDH1	40470	India	APAC	Asia	Airtel India	EU 2
+INDJB	40445	India	APAC	Asia	Airtel India	EU 2
+INDJH	40449	India	APAC	Asia	Airtel India	EU 2
+INDMT	40431	India	APAC	Asia	Airtel India	EU 2
+INDSC	40440	India	APAC	Asia	Airtel India	EU 2
+IND10	40554	India	APAC	Asia	Airtel India	EU 2
+IND11	40553	India	APAC	Asia	Airtel India	EU 2
+IND12	40552	India	APAC	Asia	Airtel India	EU 2
+IND14	40551	India	APAC	Asia	Airtel India	EU 2
+IND15	40556	India	APAC	Asia	Airtel India	EU 2
+IND16	40416	India	APAC	Asia	Airtel India	EU 2
+IDN89	51089	Indonesia	APAC	Asia	3 Indonesia	EU 2
+IRLDF	27202	Ireland	Europe	Europe	3 Ireland	EU 2
+IRLH3	27205	Ireland	Europe	Europe	3 Ireland	EU 2
+IRLME	27203	Ireland	Europe	Europe	Eir Ireland	EU 2
+IRLEC	27201	Ireland	Europe	Europe	Vodafone Ireland	EU 2
+ISRPL	42503	Israel	Middle East	Asia	Pelephone Israel	EU 2
+ITAWI	22288	Italy	Europe	Europe	3 Italy	EU 2
+ITASI	22201	Italy	Europe	Europe	TIM Italy	EU 2
+ITAOM	22210	Italy	Europe	Europe	Vodafone Italy	EU 2
+GBRJT	23450	Jersey	Europe	Europe	JT Global Jersey	EU 2
+JORUM	41603	Jordan	Middle East	Asia	Umniah Jordan	EU 2
+KAZKT	40101	Kazakhstan	CIS	Asia	Beeline Kazakhstan	EU 2
+KORKF	45008	South Korea	APAC	Asia	KT South Korea	EU 2
+K0001	22102	Kosovo	Europe	Europe	IPKO Kosovo	EU 2
+KWTNM	41903	Kuwait	Middle East	Asia	Ooredoo Kuwait	EU 2
+KGZMC	43705	Kyrgyzstan	CIS	Asia	Alfa Telecom Kyrgyzstan	EU 2
+LVALM	24701	Latvia	Europe	Europe	LMT Latvia	EU 2
+LVABC	24702	Latvia	Europe	Europe	Tele2 Latvia	EU 2
+LSOVL	65101	Lesotho	Africa	Africa	Vodacom Lesotho	EU 2
+LIEVE	29502	Liechtenstein	Europe	Europe	Salt Liechtenstein	EU 2
+LIEMK	29505	Liechtenstein	Europe	Europe	FL1 Liechtenstein	EU 2
+LTUOM	24601	Lithuania	Europe	Europe	Telia Lithuania	EU 2
+LTU03	24603	Lithuania	Europe	Europe	Tele2 Lithuania	EU 2
+LUXPT	27001	Luxembourg	Europe	Europe	Post Luxembourg	EU 2
+MACCT	45501	Macau	APAC	Asia	CTM Macau	EU 2
+MYSMI	50218	Malaysia	APAC	Asia	U-Mobile Malaysia	EU 2
+MYSBC	50212	Malaysia	APAC	Asia	Maxis Malaysia	EU 2
+MEXMS	334030	Mexico	North America	Central America	Movistar Mexico	EU 2
+MEXIU	334050	Mexico	North America	Central America	AT&T Mexico	EU 2
+MDAUN	25905	Moldova	CIS	Europe	Moldtelecom Moldova	EU 2
+MDAMC	25902	Moldova	CIS	Europe	Moldcell Moldova	EU 2
+MCOM2	21210	Monaco	Maritime	Europe	Monaco Telecom	EU 2
+MNEMT	29703	Montenegro	Europe	Europe	MTEL Montenegro	EU 2
+MNEPM	29701	Montenegro	Europe	Europe	One Montenegro	EU 2
+MARM1	60401	Morocco	Africa	Africa	Maroc Telecom Morocco	EU 2
+MOZVC	64304	Mozambique	Africa	Africa	Vodacom Mozambique	EU 2
+NLDPT	20408	Netherlands	Europe	Europe	KPN Netherlands	EU 2
+NLDPN	20416	Netherlands	Europe	Europe	T-Mobile Netherlands	EU 2
+NLDLT	20404	Netherlands	Europe	Europe	Vodafone Netherlands	EU 2
+ANTTC	36251	Netherlands Antilles	South America	South America	Telcell Curacao	EU 2
+NZLBS	53001	New Zealand	APAC	Oceania	Vodafone New Zealand	EU 2
+NZLTM	53005	New Zealand	APAC	Oceania	Spark New Zealand	EU 2
+NGAGM	62150	Nigeria	Africa	Africa	Glo Mobile Nigeria	EU 2
+MKDMM	29401	Macedonia	Europe	Europe	T-Mobile Macedonia	EU 2
+NORTM	24201	Norway	Europe	Europe	Telenor Norway	EU 2
+NORNC	24202	Norway	Europe	Europe	Telia Norway	EU 2
+OMNGT	42202	Oman	Middle East	Asia	Omantel Oman	EU 2
+PLWPC	55201	Palau	APAC	Oceania	PNCC PalauCel	EU 2
+PSEWM	42506	Palestine	APAC	Asia	Ooredoo Palestine	EU 2
+PRYTC	74404	Paraguay	South America	South America	Tigo Paraguay	EU 2
+PERN3	71617	Peru	South America	South America	Entel Peru	EU 2
+PHLGT	51502	Philippines	APAC	Asia	Globe Telecom Philippines	EU 2
+POLP4	26006	Poland	Europe	Europe	Play Poland	EU 2
+POLKM	26001	Poland	Europe	Europe	Plus Poland	EU 2
+POL02	26002	Poland	Europe	Europe	T-Mobile Poland	EU 2
+POL03	26003	Poland	Europe	Europe	Orange Poland	EU 2
+PRTTM	26806	Portugal	Europe	Europe	MEO Portugal	EU 2
+PRTTL	26801	Portugal	Europe	Europe	Vodafone Portugal	EU 2
+PRICL	330110	Puerto Rico	North America	North America	Claro Puerto Rico	EU 2
+QATQT	42701	Qatar	APAC	Asia	Ooredoo Qatar	EU 2
+ROM05	22605	Romania	Europe	Europe	RCS & RDS Romania 	EU 2
+ROMCS	22603	Romania	Europe	Europe	T-Mobile Romania	EU 2
+ROMMF	22601	Romania	Europe	Europe	Vodafone Romania	EU 2
+RUSBD	25099	Russia	CIS	Europe	Beeline Russia	EU 2
+RUST2	25020	Russia	CIS	Europe	Tele2 Russia	EU 2
+RUSNW	25002	Russia	CIS	Europe	Megafon Russia	EU 2
+YUGMT	22001	Serbia	Europe	Europe	Yettel Serbia	EU 2
+SVKET	23102	Slovakia	Europe	Europe	T-Mobile Slovakia	EU 2
+SVKO2	23106	Slovakia	Europe	Europe	O2 Slovakia	EU 2
+SVNSM	29340	Slovenia	Europe	Europe	A1 Slovenia	EU 2
+SVNVG	29370	Slovenia	Europe	Europe	Telemach Slovenia	EU 2
+ZAFVC	65501	South Africa	Africa	Africa	Vodacom South Africa	EU 2
+ESPTE	21407	Spain	Europe	Europe	Movistar Spain	EU 2
+ESPRT	21403	Spain	Europe	Europe	Orange Spain	EU 2
+ESPAT	21401	Spain	Europe	Europe	Vodafone Spain	EU 2
+ESPXF	21404	Spain	Europe	Europe	Yoigo Spain	EU 2
+SWEHU	24002	Sweden	Europe	Europe	3 Sweden	EU 2
+SWEIQ	24007	Sweden	Europe	Europe	Tele2 Sweden	EU 2
+SWETR	24001	Sweden	Europe	Europe	Telia Sweden	EU 2
+CHEOR	22803	Switzerland	Europe	Europe	Salt Switzerland	EU 2
+CHEDX	22802	Switzerland	Europe	Europe	Sunrise Switzerland	EU 2
+CHEC1	22801	Switzerland	Europe	Europe	Swisscom Switzerland	EU 2
+TWNFE	46601	Taiwan	APAC	Asia	FET Taiwan	EU 2
+TWNPC	46697	Taiwan	APAC	Asia	Taiwan Mobile	EU 2
+TZAVC	64004	Tanzania	Africa	Africa	Vodacom Tanzania	EU 2
+THAWN	52003	Thailand	APAC	Asia	AWN Thailand	EU 2
+TUNTA	60503	Tunisia	Africa	Africa	Ooredoo Tunisie	EU 2
+TUNOR	60501	Tunisia	Africa	Africa	Orange Tunisia	EU 2
+TURTS	28602	Turkey	Middle East	Asia	Vodafone Turkey	EU 2
+UKRKS	25503	Ukraine	CIS	Europe	Kyivstar Ukraine	EU 2
+AREDU	42403	United Arab Emirates	Middle East	Asia	DU UAE	EU 2
+GBRHU	23420	United Kingdom	Europe	Europe	3 UK	EU 2
+GBRME	23430	United Kingdom	Europe	Europe	EE UK	EU 2
+GBRCN	23410	United Kingdom	Europe	Europe	O2 UK	EU 2
+GBRVF	23415	United Kingdom	Europe	Europe	Vodafone UK	EU 2
+USACG	310410	United States	North America	North America	AT&T USA	EU 2
+USAUN	310020	United States	North America	North America	Union Wireless USA	EU 2
+USAW6	310260	United States	North America	North America	T-Mobile USA	EU 2
+URYAN	74801	Uruguay	South America	South America	Antel Uruguay	EU 2
+URYTM	74807	Uruguay	South America	South America	Movistar Uruguay	EU 2
+UZBDU	43404	Uzbekistan	APAC	Asia	Beeline Uzbekistan	EU 2
+UZB07	43407	Uzbekistan	APAC	Asia	Mobi Uzbekistan	EU 2
+AIACW	365840	Anguilla	LATAM	North America	Flow Anguilla	EU 2
+ATGCW	344920	Antigua and Barbuda	LATAM	North America	Flow Antigua & Barbuda	EU 2
+BRBCW	342600	Barbados	LATAM	North America	Flow Barbados	EU 2
+CYMCW	346140	Cayman Islands	LATAM	North America	Flow Cayman Islands	EU 2
+CRITC	71204	Costa Rica	LATAM	Central America	Liberty Costa Rica	EU 2
+DMACW	366110	Dominica	LATAM	North America	Flow Dominica	EU 2
+GRDCW	352110	Grenada	North America	North America	Flow Grenada	EU 2
+IDNSL	51001	Indonesia	APAC	Asia	Ooredoo Hutchison Indonesia	EU 2
+JAMDC	33805	Jamaica	LATAM	North America	Digicel Jamaica	EU 2
+JPNJP	44020	Japan	APAC	Asia	SoftBank Japan	EU 2
+KENTK	63907	Kenya	Africa	Africa	Telcom Kenya	EU 2
+LUXVM	27099	Luxembourg	Europe	Europe	Orange Luxembourg	EU 2
+MSRCW	354860	Montserrat	LATAM	North America	Flow Montserrat	EU 2
+PANCW	71401	Panama	LATAM	Central America	C&W Panama	EU 2
+ROMMR	22610	Romania	Europe	Europe	Orange Romania	EU 2
+KNACW	356110	Saint Kitts and Nevis	LATAM	North America	Flow St Kitts & Nevis	EU 2
+LCACW	358110	Saint Lucia	LATAM	North America	Flow Saint Lucia	EU 2
+VCTCW	360110	Saint Vincent and the Grenadines	LATAM	North America	Flow Saint Vincent & The Grenadines	EU 2
+SAUZN	42004	Saudi Arabia	Middle East	Asia	Zain Saudi Arabia	EU 2
+SENAZ	60801	Senegal	Africa	Africa	Orange Senegal	EU 2
+TCACW	376350	Turks and Caicos Islands	LATAM	North America	Flow Turks and Caicos Islands	EU 2
+UKRAS	25506	Ukraine	CIS	Europe	Lifecell Ukraine	EU 2
+UKRUT	25507	Ukraine	CIS	Europe	Trimob Ukraine	EU 2
+VNMVT	45204	Vietnam	APAC	Asia	Viettel Vietnam	EU 2
+VGBCW	348170	British Virgin Islands	North America	North America	Flow British Virgin Islands	EU 2
+BRAV1	72410	Brazil	South America	South America	Vivo Brazil	EU 2
+BRAV2	72406	Brazil	South America	South America	Vivo Brazil	EU 2
+BRAV3	72411	Brazil	South America	South America	Vivo Brazil	EU 2
+BRATC	72423	Brazil	South America	South America	Vivo Brazil	EU 2
+EGYEM	60203	Egypt	Middle East	Africa	Etisalat Egypt	EU 2
+SLVDC	70602	El Salvador	LATAM	Central America	Digicel El Salvador	EU 2
+GRCSH	20210	Greece	Europe	Europe	Nova Greece	EU 2
+FRAF4	34020	Guadeloupe	North America	North America	Digicel Guadeloupe	EU 2
+GUYUM	73801	Guyana	South America	South America	Digicel Guyana	EU 2
+JAMCW	338180	Jamaica	LATAM	North America	Flow Jamaica	EU 2
+JPNRM	44011	Japan	APAC	Asia	Rakuten Japan	EU 2
+MDAVX	25901	Moldova	CIS	Europe	Orange Moldova	EU 2
+ANTCT	36269	Netherlands Antilles	South America	South America	Digicel Curacao	EU 2
+YUGTS	22003	Serbia	Europe	Europe	M:ts Serbia	EU 2
+SURDC	74603	Suriname	South America	South America	Digicel Suriname	EU 2
+TTODL	374130	Trinidad and Tobago	LATAM	North America	Digicel Trinidad and Tobago	EU 2
+PRI01	313790	Virgin Islands, U.S.	North America	North America	Liberty Puerto Rico	EU 2
+DZAOT	60302	Algeria	Middle East	Africa	Djezzy Algeria	EU 2
+AZEAC	40001	Azerbaijan	CIS	Asia	Azercell Azerbaijan	EU 2
+BRACS	72404	Brazil	South America	South America	TIM Brazil	EU 2
+BRARN	72402	Brazil	South America	South America	TIM Brazil	EU 2
+BRASP	72403	Brazil	South America	South America	TIM Brazil	EU 2
+SLVTS	70604	El Salvador	LATAM	Central America	Movistar El Salvador	EU 2
+JORFL	41601	Jordan	Middle East	Asia	Zain Jordan	EU 2
+MARM3	60402	Morocco	Africa	Africa	INWI Morocco	EU 2
+OMNVF	42206	Oman	Middle East	Asia	Oman Future Telecommunication	EU 2
+PERMO	71606	Peru	South America	South America	Movistar Peru	EU 2
+WSMGS	54927	Samoa	APAC	Oceania	Bluesky (Vodafone) Samoa	EU 2
+SLEAC	61905	Sierra Leone	Africa	Africa	Africell Sierra Leone	EU 2
+SGPML	52501	Singapore	APAC	Asia	SingTel Singapore	EU 2
+TCADC	376360	Turks and Caicos Islands	LATAM	North America	Digicel Turks and Caicos Islands	EU 2
+VGBDC	348770	British Virgin Islands	North America	North America	Digicel British Virgin Islands	EU 2
+BLRMD	25701	Belarus	CIS	Europe	A1 Belarus	EU 2
+LBY01	60601	Libya	Africa	Africa	Al Madar Al Jadid Lybia	EU 2
+TURIS	28603	Turkey	Middle East	Asia	TT Mobil Turkey	EU 2
+ABWSE	36301	Aruba	LATAM	North America	Setar GSM	EU 4
+AFGAR	41240	Afghanistan	APAC	Asia	MTN Afghanistan	EU 4
+AFGAW	41201	Afghanistan	APAC	Asia	Afghan Wireless Communication	EU 4
+AFGEA	41250	Afghanistan	APAC	Asia	Etisalat- Afghanistan	EU 4
+AFGTD	41220	Afghanistan	APAC	Asia	Roshan	EU 4
+AGOUT	63102	Angola	Africa	Africa	Unitel S.A.R.L.	EU 4
+AIACW	365840	Anguilla	LATAM	North America	Cable and Wireless, Anguilla	EU 4
+ALBAM	27601	Albania	Europe	Europe	AMC Albania	EU 4
+ALBEM	27603	Albania	Europe	Europe	Eagle Mobile	EU 4
+ANDMA	21303	Andorra	Europe	Europe	STA Andorra	EU 4
+ANTCT	36269	Netherlands Antilles	South America	South America	Digicel Curacao	EU 4
+ANTTC	36251	Netherlands Antilles	South America	South America	TelCell NV	EU 4
+ANTUT	36291	Netherlands Antilles	South America	South America	Setel N.V. (UTS)	EU 4
+AREDU	42403	United Arab Emirates	Middle East	Asia	du - Emirates I.T.C.	EU 4
+ARETC	42402	United Arab Emirates	Middle East	Asia	Etisalat United Arab Emirates	EU 4
+ARGTM	72207	Argentina	South America	South America	Telefonica Moviles Argentina	EU 4
+ARGTP	72234	Argentina	South America	South America	Telecom Personal S.A. ,Argen.	EU 4
+ARM 1.00	28301	Armenia	CIS	Asia	Telecom Armenia	EU 4
+ARM 5.00	28305	Armenia	CIS	Asia	K Telecom CJSC	EU 4
+ARMOR	28310	Armenia	CIS	Asia	UCOM LLC	EU 4
+ATG03	34403	Antigua and Barbuda	LATAM	North America	APUA	EU 4
+ATGCW	344920	Antigua and Barbuda	LATAM	North America	Cable and Wireless, Antigua	EU 4
+AUSOP	50502	Australia	APAC	Oceania	Optus Australia	EU 4
+AUSTA	50501	Australia	APAC	Oceania	Telstra Australia	EU 4
+AUTMM	23203	Austria	Europe	Europe	T-Mobile Austria GmbH	EU 4
+AUTPT	23201	Austria	Europe	Europe	Mobilkom Austria	EU 4
+AZEAC	40001	Azerbaijan	CIS	Asia	Azercell Telecom LLC	EU 4
+AZEBC	40002	Azerbaijan	CIS	Asia	Bakcell Ltd.	EU 4
+BELKO	20620	Belgium	Europe	Europe	Telenet Belgium	EU 4
+BELMO	20610	Belgium	Europe	Europe	Orange Belgium	EU 4
+BELTB	20601	Belgium	Europe	Europe	Belgacom Mobile Belgium	EU 4
+BGDAK	47002	Bangladesh	APAC	Asia	Axiata Bangladesh	EU 4
+BGDGP	47001	Bangladesh	APAC	Asia	Grameen Phone Bangladesh	EU 4
+BGR01	28401	Bulgaria	Europe	Europe	Mobiltel Bulgaria	EU 4
+BGRCM	28405	Bulgaria	Europe	Europe	Telenor Bulgaria EAD	EU 4
+BGRVA	28403	Bulgaria	Europe	Europe	BTC Bulgaria	EU 4
+BHRBT	42601	Bahrain	Middle East	Asia	Batelco Bahrain	EU 4
+BHRMV	42602	Bahrain	Middle East	Asia	Zain Bahrain B.S.C	EU 4
+BHRST	42604	Bahrain	Middle East	Asia	VIVA Bahrain	EU 4
+BHSBH	36439	Bahamas	LATAM	North America	BTC Bahamas.	EU 4
+BHSNC	36449	Bahamas	LATAM	North America	Be Aliv	EU 4
+BIHER	21803	Bosnia&Herzegovina	Europe	Europe	PE Croatian Telecom Ltd.	EU 4
+BIHPT	21890	Bosnia&Herzegovina	Europe	Europe	BH TELECOM, JSC, Sarajevo	EU 4
+BLR02	25702	Belarus	CIS	Europe	Mobile TeleSystems	EU 4
+BLRMD	25701	Belarus	CIS	Europe	JV Mobile Digital Com. Ltd.	EU 4
+BLZ67	70267	Belize	LATAM	Central America	Belize Telecom Ltd.	EU 4
+BOLNT	73601	Bolivia	South America	South America	Nuevatel PCS de Bolivia S.A.	EU 4
+BRASP	72403	Brazil	South America	South America	TIM Brazil	EU 4
+BRAV1	72410	Brazil	South America	South America	VIVO	EU 4
+BRBCW	342600	Barbados	LATAM	North America	Cable and Wireless,Barbados	EU 4
+BRNDS	52811	Brunei Darussalam	APAC	Asia	Unified National Networks	EU 4
+BWABC	65204	Botswana	Africa	Africa	BTC  Mobile - BeMobile	EU 4
+BWAGA	65201	Botswana	Africa	Africa	Mascom - MTN Botswana	EU 4
+CANBM	302610	Canada	North America	North America	Bell Mobility	EU 4
+CANRW	302720	Canada	North America	North America	Rogers AT&T Wireless	EU 4
+CANTS	302220	Canada	North America	North America	Telus	EU 4
+CANVT	302500	Canada	North America	North America	Videotron Ltd	EU 4
+CHEDX	22802	Switzerland	Europe	Europe	sunrise	EU 4
+CHEOR	22803	Switzerland	Europe	Europe	Orange Communications SA	EU 4
+CHLMV	73001	Chile	South America	South America	Entel Movil Chile	EU 4
+CHLTM	73002	Chile	South America	South America	Telefonica Moviles Chile	EU 4
+CHNCT	46000	China	APAC	Asia	China Mobile	EU 4
+CHNCU	46001	China	APAC	Asia	China Unicom	EU 4
+CIVTL	61205	Ivory Coast	Africa	Africa	MTN Cote d'Ivoire	EU 4
+CMRMT	62401	Cameroon	Africa	Africa	MTN Cameroon Ltd.	EU 4
+CODAC	63090	Congo Drc	Africa	Africa	Africell RDC	EU 4
+CODCT	63002	Congo Drc	Africa	Africa	Airtel Congo RDC	EU 4
+COGCT	62901	Congo	Africa	Africa	Airtel Congo SA	EU 4
+COGWC	62907	Congo	Africa	Africa	Warid Congo	EU 4
+COLCM	732101	Colombia	South America	South America	Comcel - Claro Colombia	EU 4
+COLCO	732111	Colombia	South America	South America	Colombia Movil	EU 4
+COLTM	732123	Colombia	South America	South America	Telefonica Moviles Colombia	EU 4
+CPVCV	62501	Cape Verde	Africa	Africa	CVMovel SA	EU 4
+CPVTM	62502	Cape Verde	Africa	Africa	T+ Telecommunicacoes	EU 4
+CRICR	71201	Costa Rica	LATAM	Central America	ICE Costa Rica	EU 4
+CRITC	71204	Costa Rica	LATAM	Central America	Telefonica Costa Rica	EU 4
+CYMCW	346140	Cayman Islands	LATAM	North America	Cable and Wireless,Cayman Isla	EU 4
+CYPCT	28001	Cyprus	Europe	Europe	CYTA Cyprus	EU 4
+CYPPT	28020	Cyprus	Europe	Europe	PrimeTel PLC	EU 4
+CYPSC	28010	Cyprus	Europe	Europe	EPIC Ltd. Cyprus	EU 4
+CZEET	23002	Czech Republic	Europe	Europe	O2 Czech Republic a.s.	EU 4
+CZERM	23001	Czech Republic	Europe	Europe	T-Mobile Czech Republic a.s.	EU 4
+DEUD1	26201	Germany	Europe	Europe	Telekom Deutschland GmbH	EU 4
+DEUD2	26202	Germany	Europe	Europe	Vodafone D2 GmbH	EU 4
+DEUE2	26207	Germany	Europe	Europe	Telefonica O2 Germany	EU 4
+DMACW	366110	Dominica	LATAM	North America	Cable and Wireless, Dominica	EU 4
+DNKDM	23802	Denmark	Europe	Europe	Telenor AS	EU 4
+DNKHU	23806	Denmark	Europe	Europe	Hutchison 3G Denmark	EU 4
+DNKIA	23820	Denmark	Europe	Europe	Telia Danmark	EU 4
+DNKTD	23801	Denmark	Europe	Europe	TDC Mobil A/S	EU 4
+DOM01	37001	Dominican Republic	LATAM	North America	Orange Dominicana SA	EU 4
+DOMAC	37004	Dominican Republic	LATAM	North America	Trilogy "viva"	EU 4
+DOMCL	37002	Dominican Republic	LATAM	North America	Compania Dominicana de Tel.	EU 4
+DZAA1	60301	Algeria	Middle East	Africa	Algerie Telecom Mobile	EU 4
+DZAOT	60302	Algeria	Middle East	Africa	Djezzy/ORASCOM Telecom Algerie	EU 4
+DZAWT	60303	Algeria	Middle East	Africa	WATANIYA TELECOM	EU 4
+ECUOT	74000	Ecuador	South America	South America	Otecel S.A. Ecuador	EU 4
+EGYAR	60201	Egypt	Middle East	Africa	Orange Egypt	EU 4
+EGYEM	60203	Egypt	Middle East	Africa	Etisalat Misr	EU 4
+EGYMS	60202	Egypt	Middle East	Africa	Vodafone Egypt	EU 4
+ESPAT	21401	Spain	Europe	Europe	Vodafone Spain S.A	EU 4
+ESPRT	21403	Spain	Europe	Europe	France Telecom Spain S.A.	EU 4
+ESPTE	21407	Spain	Europe	Europe	Telefonica Moviles Spain	EU 4
+ESTEM	24801	Estonia	Europe	Europe	Telia Eesti AS	EU 4
+ESTRB	24803	Estonia	Europe	Europe	Tele2 Eesti AS	EU 4
+ETH01	63601	Ethiopia	Africa	Africa	Ethiopian Telecommunication Co	EU 4
+FIN2G	24412	Finland	Europe	Europe	DNA Ltd.	EU 4
+FINTF	24491	Finland	Europe	Europe	TeliaSonera Finland	EU 4
+FJIDP	54202	Fiji	APAC	Oceania	Digicel Fiji	EU 4
+FRAF1	20801	France	Europe	Europe	Orange France	EU 4
+FRAF2	20810	France	Europe	Europe	SFR France	EU 4
+FRAF3	20820	France	Europe	Europe	Bouygues Telecom  France	EU 4
+FRAF4	34020	Guadeloupe	North America	North America	Digicel French W.Indies Guyana	EU 4
+FRAFM	20815	France	Europe	Europe	Free Mobile	EU 4
+FRARE	64710	Reunion	Africa	Africa	Societe Reunionnaise du Radio.	EU 4
+FROFT	28801	Faroe Islands	Europe	Europe	Faroese Telecom Faroe Islands	EU 4
+GABCT	62803	Gabon	Africa	Africa	Airtel Gabon SA	EU 4
+GBRAJ	23403	United Kingdom	Europe	Europe	Jersey Airtel Ltd	EU 4
+GBRGT	23455	United Kingdom	Europe	Europe	Cable & Wireless Guernsey Ltd.	EU 4
+GBRJT	23450	United Kingdom	Europe	Europe	Jersey Telecoms UK	EU 4
+GBRMT	23458	United Kingdom	Europe	Europe	Manx Telecom UK Isle of Man	EU 4
+GEOGC	28201	Georgia	CIS	Asia	Geocell Georgia	EU 4
+GEOMA	28202	Georgia	CIS	Asia	Magticom Georgia	EU 4
+GEOMT	28204	Georgia	CIS	Asia	Mobitel Georgia "BeeLine"	EU 4
+GHAGT	62002	Ghana	Africa	Africa	Ghana Telecommunications Co. L	EU 4
+GHAMT	62003	Ghana	Africa	Africa	Millicom Ghana - Tigo	EU 4
+GHASC	62001	Ghana	Africa	Africa	Scancom Ltd - MTN	EU 4
+GHAZN	62006	Ghana	Africa	Africa	Airtel Ghana	EU 4
+GIBGT	26601	Gibraltar	Europe	Europe	Gibtelecom	EU 4
+GINAG	61104	Guinea	Africa	Africa	MTN Guinea	EU 4
+GLP01	34001	Guadeloupe	North America	North America	Orange Caraibe	EU 4
+GMBAC	60702	Gambia	Africa	Africa	Africell Gambia Ltd	EU 4
+GMBQC	60704	Gambia	Africa	Africa	Qcell Gambia	EU 4
+GNBSB	63202	Guinea Bissau	Africa	Africa	MTN Guinea Bissau	EU 4
+GRCCO	20201	Greece	Europe	Europe	Cosmote Greece	EU 4
+GRCSH	20210	Greece	Europe	Europe	Wind Hellas	EU 4
+GRDCW	352110	Grenada	North America	North America	Cable and Wireless,Grenada	EU 4
+GRLTG	29001	Greenland	North America	North America	Tele Greenland	EU 4
+GTMCM	70402	Guatemala	LATAM	Central America	Comunicaciones Celulares - Tigo GTM	EU 4
+GTMSC	70401	Guatemala	LATAM	Central America	Telecomunicaciones de Guatemala - Claro	EU 4
+GTMTG	70403	Guatemala	LATAM	Central America	Telecomunicaciones de Guatemala - Claro (GTMTG)	EU 4
+GUYGT	738002	Guyana	South America	South America	Guyana Telephone & Telegraph Co.	EU 4
+GUYUM	73801	Guyana	South America	South America	U Mobile Cellular	EU 4
+HKGPP	45412	Hong Kong	APAC	Asia	China Mobile Peoples Telephone	EU 4
+HKGSM	45406	Hong Kong	APAC	Asia	SmarTone-Vodafone	EU 4
+HKGTC	45400	Hong Kong	APAC	Asia	HKT	EU 4
+HNDME	708001	Honduras	LATAM	Central America	SERCOM - Claro Honduras	EU 4
+HRVCN	21901	Croatia	Europe	Europe	T-Mobile Croatia	EU 4
+HRVT2	21902	Croatia	Europe	Europe	Telemach Croatia	EU 4
+HRVVI	21910	Croatia	Europe	Europe	VIPnet d.o.o., Croatia	EU 4
+HUNH1	21601	Hungary	Europe	Europe	Telenor Hungary	EU 4
+HUNH2	21630	Hungary	Europe	Europe	Magyar Telekom	EU 4
+HUNVR	21670	Hungary	Europe	Europe	Vodafone Hungary Ltd.	EU 4
+IDNEX	51011	Indonesia	APAC	Asia	XL Axiata - Robi	EU 4
+IDNSL	51001	Indonesia	APAC	Asia	PT Indosat	EU 4
+IDNTS	51010	Indonesia	APAC	Asia	Telkomsel Indonesia	EU 4
+IND07	40407	India	APAC	Asia	Idea Cellular	EU 4
+INDA1	40492	India	APAC	Asia	Bharti India	EU 4
+INDHM	40420	India	APAC	Asia	Vodafone India	EU 4
+INDJ1	405840	India	APAC	Asia	Reliance JIO India	EU 4
+INDWB	40474	India	APAC	Asia	Bharat Sanchar Nigam Ltd.	EU 4
+IRLEC	27201	Ireland	Europe	Europe	Vodafone Ireland	EU 4
+IRLH3	27205	Ireland	Europe	Europe	Hutchison 3G Ireland	EU 4
+IRLME	27203	Ireland	Europe	Europe	Meteor Ireland	EU 4
+IRQAC	41805	Iraq	APAC	Asia	Asia Cell Telecommunications	EU 4
+IRQKK	41840	Iraq	APAC	Asia	Korek Telecom Ltd.	EU 4
+ISLPS	27401	Iceland	Europe	Europe	Siminn hf.	EU 4
+ISLTL	27402	Iceland	Europe	Europe	Vodafone Iceland	EU 4
+ISR01	42501	Israel	Middle East	Asia	Partner Communication  Israel	EU 4
+ISRCL	42502	Israel	Middle East	Asia	Cellcom Israel Ltd.	EU 4
+ISRMS	42507	Israel	Middle East	Asia	Mirs Communications, Ltd	EU 4
+ISRPL	42503	Israel	Middle East	Asia	Pelephone Communications	EU 4
+ITAFM	22250	Italy	Europe	Europe	Iliad Italia	EU 4
+ITAOM	22210	Italy	Europe	Europe	Vodafone Omnitel N.V.	EU 4
+ITASI	22201	Italy	Europe	Europe	Telecom Italia	EU 4
+ITAWI	22288	Italy	Europe	Europe	Wind Tre	EU 4
+JAMCW	338180	Jamaica	LATAM	North America	Cable and Wireless,Jamaica	EU 4
+JAMDC	338050	Jamaica	LATAM	North America	Digicel Caribbean	EU 4
+JORFL	41601	Jordan	Middle East	Asia	Fastlink Jordan	EU 4
+JORMC	41677	Jordan	Middle East	Asia	Orange Jordan	EU 4
+JORUM	41603	Jordan	Middle East	Asia	Umniah Mobile Company	EU 4
+JPNDO	44010	Japan	APAC	Asia	NTT DoCoMo	EU 4
+JPNJP	44020	Japan	APAC	Asia	SoftBank Mobile Corp.	EU 4
+K0001	22102	Kosovo	Europe	Europe	IPKO Kosovo	EU 4
+KAZKT	40101	Kazakhstan	CIS	Asia	KaR-Tel LLP	EU 4
+KAZKZ	40102	Kazakhstan	CIS	Asia	K-Cell Kazakhstan	EU 4
+KENKC	63903	Kenya	Africa	Africa	Airtel Kenya Ltd	EU 4
+KENSA	63902	Kenya	Africa	Africa	Safaricom Limited	EU 4
+KENTK	63907	Kenya	Africa	Africa	Orange Kenya	EU 4
+KHMSM	45602	Cambodia	APAC	Asia	Hello Axiata Co. Ltd	EU 4
+KNACW	356110	Saint Kitts and Nevis	LATAM	North America	Cable and Wireless, St. Kitts	EU 4
+KORKF	45008	South Korea	APAC	Asia	KT Corporation	EU 4
+KORSK	45005	South Korea	APAC	Asia	SK Telecom	EU 4
+KWTKT	41904	Kuwait	Middle East	Asia	KTC - Viva	EU 4
+KWTMT	41902	Kuwait	Middle East	Asia	MTC - Zain Kuwait	EU 4
+KWTNM	41903	Kuwait	Middle East	Asia	Watanya Telecom Kuwait	EU 4
+LAOAS	45703	Laos	APAC	Asia	Star Telecom Co., Ltd (Unitel)	EU 4
+LAOTC	45701	Laos	APAC	Asia	Lao Telecom	EU 4
+LBNFL	41501	Lebanon	Middle East	Asia	Mobile Interim Company 1 S.A.L	EU 4
+LBNLC	41503	Lebanon	Middle East	Asia	Mobile Interim Company 2 S.A.L	EU 4
+LBRLC	61801	Liberia	Africa	Africa	MTN Liberia (Lonestar)	EU 4
+LCACW	358110	Saint Lucia	LATAM	North America	Cable and Wireless,St. Lucia	EU 4
+LIEMK	29505	Liechtenstein	Europe	Europe	Mobilkom Liechtenstein	EU 4
+LKA71	41301	Sri Lanka	APAC	Asia	Mobitel(Pvt)Ltd, Sri Lanka	EU 4
+LKAAT	41305	Sri Lanka	APAC	Asia	Bharti Airtel Lanka Limited	EU 4
+LKADG	41302	Sri Lanka	APAC	Asia	Dialog Telekom Ltd	EU 4
+LKAHT	41308	Sri Lanka	APAC	Asia	Hutchison Telecommunications Lanka (Pvt) Ltd	EU 4
+LTU03	24603	Lithuania	Europe	Europe	TELE2, Lithuania	EU 4
+LTUOM	24601	Lithuania	Europe	Europe	Telia Lietuva AB	EU 4
+LUXPT	27001	Luxembourg	Europe	Europe	P&T Luxembourg	EU 4
+LUXTG	27077	Luxembourg	Europe	Europe	TANGO Mobile SA	EU 4
+LUXVM	27099	Luxembourg	Europe	Europe	Orange SA	EU 4
+LVABC	24702	Latvia	Europe	Europe	TELE2 Latvia	EU 4
+LVALM	24701	Latvia	Europe	Europe	LMT Latvia	EU 4
+MACCT	45501	Macau	APAC	Asia	CTM Macau	EU 4
+MARM1	60401	Morocco	Africa	Africa	Maroc Telecom	EU 4
+MARM3	60402	Morocco	Africa	Africa	Wana Corporate	EU 4
+MARMT	60400	Morocco	Africa	Africa	Medi Telecom	EU 4
+MCOM1	21201	Monaco	Europe	Europe	Monaco Telecom (Kosovo)	EU 4
+MCOM2	21210	Monaco	Europe	Europe	Monaco Telecom S.A.M.	EU 4
+MDAMC	25902	Moldova	CIS	Europe	Moldcell Moldavia	EU 4
+MDAVX	25901	Moldova	CIS	Europe	Orange Moldova	EU 4
+MDGCO	64601	Madagascar	Africa	Africa	Airtel Madagascar SA	EU 4
+MDGTM	64604	Madagascar	Africa	Africa	Telma Mobile SA	EU 4
+MDV01	47201	Maldives	APAC	Asia	Dhiraagu, Republic of Maldives	EU 4
+MEXIU	334050	Mexico	North America	Central America	AT&T Mexico	EU 4
+MEXMS	334030	Mexico	North America	Central America	Telefonica Moviles Mexico	EU 4
+MEXTL	334020	Mexico	North America	Central America	Telcel - Claro Mexico	EU 4
+MKDCC	29402	Macedonia	Europe	Europe	ONE Stock Co. Skopje	EU 4
+MKDMM	29401	Macedonia	Europe	Europe	T-Mobile Macedonia	EU 4
+MKDNO	29403	Macedonia	Europe	Europe	Vip Operator	EU 4
+MLI01	61001	Mali	Africa	Africa	Malitel	EU 4
+MLTGO	27821	Malta	Europe	Europe	Go Mobile Malta	EU 4
+MLTTL	27801	Malta	Europe	Europe	Epic Communications	EU 4
+MMROM	41405	Myanmar	APAC	Asia	Ooredoo Myanmar Limited	EU 4
+MMRTN	41406	Myanmar	APAC	Asia	Telenor Myanmar	EU 4
+MNEMT	29703	Montenegro	Europe	Europe	MTEL Montenegro	EU 4
+MNEPM	29701	Montenegro	Europe	Europe	Telenor Montenegro	EU 4
+MNETM	29702	Montenegro	Europe	Europe	Crnogorski Telekom a.d. Podgorica	EU 4
+MNGMN	42888	Mongolia	APAC	Asia	Unitel LLC Mongolia	EU 4
+MOZ01	64301	Mozambique	Africa	Africa	Mozambique Celular (mCel) Lda	EU 4
+MOZVG	64303	Mozambique	Africa	Africa	Viettel Mozambique	EU 4
+MRTCH	60902	Mauritania	Africa	Africa	Chinguitel Mauritania	EU 4
+MRTMM	60910	Mauritania	Africa	Africa	Mauritel Mobiles	EU 4
+MSRCW	354860	Montserrat	LATAM	North America	Cable and Wireless, Montserrat	EU 4
+MUSCP	61701	Mauritius	Africa	Africa	Cellplus Mauritius	EU 4
+MUSEM	61710	Mauritius	Africa	Africa	Emtel Limited Mauritius	EU 4
+MUSMT	61703	Mauritius	Africa	Africa	Mahanagar Telephone Ltd	EU 4
+MWICT	65010	Malawi	Africa	Africa	Airtel Malawi Ltd	EU 4
+MYSBC	50212	Malaysia	APAC	Asia	Maxis Mobile	EU 4
+MYSCC	50219	Malaysia	APAC	Asia	Celcom Malaysia	EU 4
+MYSMI	50218	Malaysia	APAC	Asia	Umobile	EU 4
+MYSMT	50216	Malaysia	APAC	Asia	Digi Telecom Malaysia	EU 4
+NAM03	64903	Namibia	Africa	Africa	Powercom - leo TM	EU 4
+NGAEM	62160	Nigeria	Africa	Africa	Emerging Markets Telecommunication Services Ltd	EU 4
+NGAET	62120	Nigeria	Africa	Africa	Airtel Nigeria Ltd	EU 4
+NGAGM	62150	Nigeria	Africa	Africa	Glo Mobile Limited	EU 4
+NGAMN	62130	Nigeria	Africa	Africa	MTN Nigeria	EU 4
+NICMS	710300	Nicaragua	LATAM	Central America	Millicom Nicaragua	EU 4
+NLDLT	20404	Netherlands	Europe	Europe	Vodafone Netherlands	EU 4
+NLDPN	20416	Netherlands	Europe	Europe	T-Mobile Netherlands BV	EU 4
+NLDPT	20408	Netherlands	Europe	Europe	KPN B.V.	EU 4
+NORNC	24202	Norway	Europe	Europe	Telia Norge AS (NORNC)	EU 4
+NORTM	24201	Norway	Europe	Europe	Telenor Mobil Norway	EU 4
+NPLM2	42902	Nepal	APAC	Asia	Spice Nepal Private Limited	EU 4
+NZLBS	53001	New Zealand	APAC	Oceania	Vodafone New Zealand	EU 4
+NZLNH	53024	New Zealand	APAC	Oceania	Two Degrees Mobile	EU 4
+NZLTM	53005	New Zealand	APAC	Oceania	Spark Telecom	EU 4
+OMNGT	42202	Oman	Middle East	Asia	Omantel	EU 4
+OMNNT	42203	Oman	Middle East	Asia	Nawras	EU 4
+PAKMK	41001	Pakistan	APAC	Asia	Jazz Pakistan	EU 4
+PAKTP	41006	Pakistan	APAC	Asia	Telenor Pakistan Pvt. Ltd.	EU 4
+PAKUF	41003	Pakistan	APAC	Asia	Pak Telecom Mobile Limited	EU 4
+PANMS	714020	Panama	LATAM	Central America	Millicom Panama	EU 4
+PERMO	71606	Peru	South America	South America	Telefonica Moviles Peru	EU 4
+PERTM	71610	Peru	South America	South America	America Movil Peru S.A.C.	EU 4
+PHLGT	51502	Philippines	APAC	Asia	Globe Telecom Philippines	EU 4
+PHLSR	51503	Philippines	APAC	Asia	Smart Communications Phi	EU 4
+PNGDP	53703	Papua New Guinea	APAC	Oceania	Digicel PNG Limited	EU 4
+POL02	26002	Poland	Europe	Europe	T-Mobile Polska S.A.	EU 4
+POL03	26003	Poland	Europe	Europe	Orange Polska S.A.	EU 4
+POLKM	26001	Poland	Europe	Europe	Polkomtel Poland	EU 4
+POLP4	26006	Poland	Europe	Europe	P4 Poland	EU 4
+PRTOP	26803	Portugal	Europe	Europe	NOS Portugal	EU 4
+PRTTL	26801	Portugal	Europe	Europe	Vodafone Portugal	EU 4
+PRTTM	26806	Portugal	Europe	Europe	MEO Portugal	EU 4
+PRYNP	74405	Paraguay	South America	South America	Nucleo S.A. - Personal	EU 4
+PRYTC	74404	Paraguay	South America	South America	Telecel S.A. - Tigo PRY	EU 4
+PSEWM	42506	Palestine	APAC	Asia	Wataniya Palestine	EU 4
+PYFVF	54715	French Polynesia	APAC	Oceania	Pacific Mobile Telecom	EU 4
+QATB1	42702	Qatar	APAC	Asia	Vodafone Qatar	EU 4
+QATQT	42701	Qatar	APAC	Asia	Ooredoo Qatar	EU 4
+ROM05	22605	Romania	Europe	Europe	RCS & RDS	EU 4
+ROMCS	22603	Romania	Europe	Europe	Telekom Romania Mobile Communications S.A.	EU 4
+ROMMF	22601	Romania	Europe	Europe	Vodafone Romania	EU 4
+ROMMR	22610	Romania	Europe	Europe	Orange Romania SA	EU 4
+RUS01	25001	Russia	CIS	Europe	Mobile TeleSystems OJSC	EU 4
+RUSBD	25099	Russia	CIS	Europe	VimpelCom	EU 4
+RUSNW	25002	Russia	CIS	Europe	MegaFon	EU 4
+RUST2	25020	Russia	CIS	Europe	Tele2 Russia	EU 4
+RWAAR	63514	Rwanda	Africa	Africa	Airtel Rwanda Limited	EU 4
+RWATG	63513	Rwanda	Africa	Africa	Tigo Rwanda	EU 4
+SAUET	42003	Saudi Arabia	Middle East	Asia	Etihad Etisalat Company	EU 4
+SAUZN	42004	Saudi Arabia	Middle East	Asia	MTC - Zain Saudi Arabia	EU 4
+SENEX	60803	Senegal	Africa	Africa	Expresso Senegal	EU 4
+SENSG	60802	Senegal	Africa	Africa	Sentel Senegal	EU 4
+SGPM1	52503	Singapore	APAC	Asia	MobileOne Ltd.	EU 4
+SGPSH	52505	Singapore	APAC	Asia	StarHub Mobile Pte Ltd.	EU 4
+SGPST	52501	Singapore	APAC	Asia	Singapore Telecom	EU 4
+SLEAC	61905	Sierra Leone	Africa	Africa	Africell Lintel Sierra Leone	EU 4
+SLVTP	70601	El Salvador	LATAM	Central America	CTE Telecom Personal - Claro SLV	EU 4
+SRBNO	22005	Serbia	Europe	Europe	Vip mobile d.o.o.	EU 4
+SUDMO	63401	Sudan	Africa	Africa	Mobitel Sudan - Zain	EU 4
+SURDC	74603	Suriname	South America	South America	Digicel Suriname	EU 4
+SVKET	23102	Slovakia	Europe	Europe	T-Mobile Slovensko, a.s.	EU 4
+SVKGT	23101	Slovakia	Europe	Europe	Orange Slovensko a.s.	EU 4
+SVKO2	23106	Slovakia	Europe	Europe	O2 Slovakia, s.r.o.	EU 4
+SVNMT	29341	Slovenia	Europe	Europe	Mobitel Slovenia	EU 4
+SVNSM	29340	Slovenia	Europe	Europe	Si.Mobil Slovenja	EU 4
+SVNVG	29370	Slovenia	Europe	Europe	Telemach Slovenia	EU 4
+SWEEP	24008	Sweden	Europe	Europe	Telenor Sverige AB	EU 4
+SWEHU	24002	Sweden	Europe	Europe	Hutchison 3G Sweden	EU 4
+SWEIQ	24007	Sweden	Europe	Europe	Tele2 AB Sweden	EU 4
+SWETR	24001	Sweden	Europe	Europe	Telia Mobile AB Sweden	EU 4
+SWZMN	65310	Swaziland	Africa	Africa	MTN Swaziland	EU 4
+SYCAT	63310	Seychelles	Africa	Africa	Airtel Telecom Seychelles	EU 4
+TCACW	376350	Turks and Caicos Islands	LATAM	North America	Cable and Wireless, Turks	EU 4
+TCADC	376360	Turks and Caicos Islands	LATAM	North America	Digicel Turks & Caicos	EU 4
+TCDCT	62201	Chad	Africa	Africa	Airtel Tchad S.A	EU 4
+TGOTL	61503	Togo	Africa	Africa	Telecel Togo	EU 4
+THAAS	52001	Thailand	APAC	Asia	AIS Thailand	EU 4
+THACA	52004	Thailand	APAC	Asia	True Move	EU 4
+TJKIT	43602	Tajikistan	CIS	Asia	Indigo Tajikistan South	EU 4
+TONDP	53988	Tonga	APAC	Oceania	Digicel (Tonga)	EU 4
+TTO12	37412	Trinidad and Tobago	LATAM	North America	Telecom.Trinidad and Tobago Lim.	EU 4
+TTODL	374130	Trinidad and Tobago	LATAM	North America	Digicel Trinidad & Tobago	EU 4
+TUNOR	60501	Tunisia	Africa	Africa	Orange Tunisie	EU 4
+TUNTA	60503	Tunisia	Africa	Africa	Orascom Telecom Tunisia	EU 4
+TUNTT	60502	Tunisia	Africa	Africa	Tunisie Telecom	EU 4
+TURIS	28603	Turkey	Middle East	Asia	AVEA Iletisim Hizmetleri A.S.	EU 4
+TURTC	28601	Turkey	Middle East	Asia	Turkcell Turkey	EU 4
+TURTS	28602	Turkey	Middle East	Asia	Vodafone Telekomunikasyon A.S.	EU 4
+TWNFE	46601	Taiwan	APAC	Asia	Far Eastone Taiwan	EU 4
+TWNLD	46692	Taiwan	APAC	Asia	Chunghwa Telecom Mobile	EU 4
+TWNPC	46697	Taiwan	APAC	Asia	Taiwan Mobile Co., Ltd.	EU 4
+TZACT	64005	Tanzania	Africa	Africa	Airtel Tanzania Ltd	EU 4
+UGACE	64101	Uganda	Africa	Africa	Airtel Uganda Ltd	EU 4
+UGAMN	64110	Uganda	Africa	Africa	MTN Uganda	EU 4
+UKRAS	25506	Ukraine	CIS	Europe	Astelit	EU 4
+UKRKS	25503	Ukraine	CIS	Europe	Kyivstar	EU 4
+UKRUM	25501	Ukraine	CIS	Europe	MTS Ukraine	EU 4
+URYTM	74807	Uruguay	South America	South America	Abiatar S.A.	EU 4
+USACG	310410	United States	North America	North America	AT&T	EU 4
+USAGC	311370	United States	North America	North America	The Alaska Wireless	EU 4
+USAUN	310020	United States	North America	North America	Union Telephone Company	EU 4
+USAVZ	311480	United States	North America	North America	Verizon Wireless	EU 4
+USAW6	310260	United States	North America	North America	T-Mobile USA	EU 4
+UZB00	43408	Uzbekistan	APAC	Asia	Uzbektelecom	EU 4
+UZB05	43405	Uzbekistan	APAC	Asia	Coscom Uzbekistan	EU 4
+UZB07	43407	Uzbekistan	APAC	Asia	FE Uzdunrobita Ltd	EU 4
+UZBDU	43404	Uzbekistan	APAC	Asia	Unitel LLC	EU 4
+VCTCW	360110	Saint Vincent and the Grenadines	LATAM	North America	Cable and Wireless, St.Vincent	EU 4
+VENMS	73404	Venezuela	South America	South America	Telefonica Moviles Venezuela	EU 4
+VGBCC	348570	British Virgin Islands	North America	North America	Caribbean Cellular Telephone	EU 4
+VGBCW	348170	British Virgin Islands	North America	North America	Cable & Wireless (BVI)	EU 4
+VGBDC	348770	British Virgin Islands	North America	North America	Digicel British Virgin Islands	EU 4
+VNMMO	45201	Vietnam	APAC	Asia	MobiFone Vietnam	EU 4
+VNMVI	45202	Vietnam	APAC	Asia	Vinaphone	EU 4
+VNMVM	45205	Vietnam	APAC	Asia	Vietnamobile CC	EU 4
+VNMVT	45204	Vietnam	APAC	Asia	Viettel Corporation	EU 4
+VUTDP	54105	Vanuatu	APAC	Oceania	Digicel (Vanuatu) Ltd	EU 4
+WSMDP	54900	Samoa	APAC	Oceania	Digicel (Samoa) Limited	EU 4
+YEMSP	42102	Yemen	Middle East	Asia	MTN Yemen	EU 4
+YUGMT	22001	Serbia	Europe	Europe	Telenor d.o.o. Serbia	EU 4
+ZAFCC	65507	South Africa	Africa	Africa	Cell C (PTY) Ltd.	EU 4
+ZAFMN	65510	South Africa	Africa	Africa	MTN South Africa	EU 4
+ZAFVC	65501	South Africa	Africa	Africa	Vodacom South Africa	EU 4
+ZMBCE	64501	Zambia	Africa	Africa	Airtel Zambia Ltd	EU 4
+ZWEET	64804	Zimbabwe	Africa	Africa	Econet Wireless Zimbabwe	EU 4
+ZWEN3	64803	Zimbabwe	Africa	Africa	Telecel Zimbabwe PVT Ltd	EU 4
+AUTCA	23205	Austria	Europe	Europe	Hutchison 3G Austria	EU 4
+BMUBD	350000	Bermuda	LATAM	North America	Bermuda Digital (M3 Wireless)	EU 4
+BRACS	72404	Brazil	South America	South America	TIM Brazil	EU 4
+BRARN	72402	Brazil	South America	South America	TIM Brazil	EU 4
+BRATC	72423	Brazil	South America	South America	VIVO	EU 4
+BRAV2	72406	Brazil	South America	South America	VIVO	EU 4
+BRAV3	72411	Brazil	South America	South America	VIVO	EU 4
+HKGH3	45403	Hong Kong	APAC	Asia	Hutchison Hong Kong	EU 4
+IDN89	51089	Indonesia	APAC	Asia	PT Indosat	EU 4
+IND10	40554	India	APAC	Asia	Bharti India	EU 4
+IND11	40553	India	APAC	Asia	Bharti India	EU 4
+IND12	40552	India	APAC	Asia	Bharti India	EU 4
+IND14	40551	India	APAC	Asia	Bharti India	EU 4
+IND15	40556	India	APAC	Asia	Bharti India	EU 4
+IND16	40416	India	APAC	Asia	Bharti India	EU 4
+INDA2	40490	India	APAC	Asia	Bharti India	EU 4
+INDA3	40498	India	APAC	Asia	Bharti India	EU 4
+INDA4	40494	India	APAC	Asia	Bharti India	EU 4
+INDA5	40496	India	APAC	Asia	Bharti India	EU 4
+INDA6	40497	India	APAC	Asia	Bharti India	EU 4
+INDA7	40495	India	APAC	Asia	Bharti India	EU 4
+INDA8	40493	India	APAC	Asia	Bharti India	EU 4
+INDA9	40402	India	APAC	Asia	Bharti India	EU 4
+INDAT	40410	India	APAC	Asia	Bharti India	EU 4
+INDBI	40424	India	APAC	Asia	Idea Cellular	EU 4
+INDBK	40446	India	APAC	Asia	Vodafone India	EU 4
+INDBL	40403	India	APAC	Asia	Bharti India	EU 4
+INDBM	40427	India	APAC	Asia	Vodafone India	EU 4
+INDBO	40422	India	APAC	Asia	Idea Cellular	EU 4
+INDBT	40443	India	APAC	Asia	Vodafone India	EU 4
+INDCC	40430	India	APAC	Asia	Vodafone India	EU 4
+INDE1	40411	India	APAC	Asia	Vodafone India	EU 4
+INDEH	40412	India	APAC	Asia	Idea Cellular	EU 4
+INDEK	40419	India	APAC	Asia	Idea Cellular	EU 4
+INDEU	40456	India	APAC	Asia	Idea Cellular	EU 4
+INDF1	40405	India	APAC	Asia	Vodafone India	EU 4
+INDH1	40470	India	APAC	Asia	Bharti India	EU 4
+INDIB	40570	India	APAC	Asia	Idea Cellular	EU 4
+INDID	40404	India	APAC	Asia	Idea Cellular	EU 4
+INDIH	40482	India	APAC	Asia	Idea Cellular	EU 4
+INDIK	405848	India	APAC	Asia	Idea Cellular	EU 4
+INDIM	405799	India	APAC	Asia	Idea Cellular	EU 4
+INDIO	405850	India	APAC	Asia	Idea Cellular	EU 4
+INDIR	40487	India	APAC	Asia	Idea Cellular	EU 4
+INDIT	405852	India	APAC	Asia	Idea Cellular	EU 4
+INDIU	40489	India	APAC	Asia	Idea Cellular	EU 4
+INDIW	405853	India	APAC	Asia	Idea Cellular	EU 4
+INDJB	40445	India	APAC	Asia	Bharti India	EU 4
+INDJH	40449	India	APAC	Asia	Bharti India	EU 4
+INDMP	40478	India	APAC	Asia	Idea Cellular	EU 4
+INDMT	40431	India	APAC	Asia	Bharti India	EU 4
+INDSC	40440	India	APAC	Asia	Bharti India	EU 4
+INDSK	40444	India	APAC	Asia	Idea Cellular	EU 4
+INDSP	40414	India	APAC	Asia	Idea Cellular	EU 4
+IRLDF	27202	Ireland	Europe	Europe	Hutchison 3G Ireland	EU 4
+ITAH3	22299	Italy	Europe	Europe	Wind Tre	EU 4
+KHMVC	45608	Cambodia	APAC	Asia	Viettel Cambodia	EU 4
+LTUMT	24602	Lithuania	Europe	Europe	Bite Lithuania	EU 4
+LVABT	24705	Latvia	Europe	Europe	Bite Latvia	EU 4
+SLVTS	70604	El Salvador	LATAM	Central America	Telefonica Moviles El Salvador	EU 4
+YUGTS	22003	Serbia	Europe	Europe	Telekom Srbija a.d.	EU 4
+BDIVG	64208	Burundi	Africa	Africa	Viettel Burundi (Lumitel)	EU 4
+CUB01	36801	Cuba	LATAM	North America	Cubacel	EU 4
+IRQAT	41820	Iraq	APAC	Asia	Zain Iraq	EU 4
+LBY01	60601	Libya	Africa	Africa	Al Madar Al Jadid Co	EU 4
+MRTMT	60901	Mauritania	Africa	Africa	Mattel, Mauritania	EU 4
+SHNCW	65801	Saint Helena	Africa	Africa	Cable & Wireless Ascension	EU 4
+THAWN	52003	Thailand	APAC	Asia	AIS Thailand	EU 4
+DEUE1	26203	Germany	Europe	Europe	Telefonica O2 Germany	EU 4
+INDJS	405869	India	APAC	Asia	Reliance JIO India	EU 4
+INDJ5	405857	India	APAC	Asia	Reliance JIO India	EU 4
+INDJQ	405867	India	APAC	Asia	Reliance JIO India	EU 4
+INDJ3	405855	India	APAC	Asia	Reliance JIO India	EU 4
+INDJ2	405854	India	APAC	Asia	Reliance JIO India	EU 4
+INDJW	405873	India	APAC	Asia	Reliance JIO India	EU 4
+INDJO	405865	India	APAC	Asia	Reliance JIO India	EU 4
+INDJ6	405858	India	APAC	Asia	Reliance JIO India	EU 4
+INDJL	405862	India	APAC	Asia	Reliance JIO India	EU 4
+INDJV	405872	India	APAC	Asia	Reliance JIO India	EU 4
+INDJ9	405861	India	APAC	Asia	Reliance JIO India	EU 4
+INDJR	405868	India	APAC	Asia	Reliance JIO India	EU 4
+INDJP	405866	India	APAC	Asia	Reliance JIO India	EU 4
+INDJM	405863	India	APAC	Asia	Reliance JIO India	EU 4
+INDJU	405871	India	APAC	Asia	Reliance JIO India	EU 4
+INDJN	405864	India	APAC	Asia	Reliance JIO India	EU 4
+INDJ7	405859	India	APAC	Asia	Reliance JIO India	EU 4
+INDJT	405870	India	APAC	Asia	Reliance JIO India	EU 4
+INDJ4	405856	India	APAC	Asia	Reliance JIO India	EU 4
+INDJX	405874	India	APAC	Asia	Reliance JIO India	EU 4
+AGOMV	63104	Angola	Africa	Africa	Movicel - Telecomunicações, S.A.	EU 4
+BGDWT	47007	Bangladesh	APAC	Asia	Robi Axiata PLC	EU 4
+BTNTC	40277	Bhutan	APAC	Asia	Tashi InfoComm Ltd, Thimphu	EU 4
+BOLTE	73603	Bolivia	South America	South America	Tigo Bolivia	EU 4
+KHMST	45609	Cambodia	APAC	Asia	Sotelco Ltd.	EU 4
+CRICL	71203	Costa Rica	LATAM	Central America	Claro CR Telecomunicaciones, S.A.	EU 4
+SLVTM	70603	El Salvador	LATAM	Central America	Tigo El Salvador	EU 4
+ETH02	63602	Ethiopia	Africa	Africa	Safaricom Telecommunications Ethiopia PLC	EU 4
+FLKCW	750001	Falkland Islands (Malvinas)	South America	South America	Sure Falkland Islands, Malvinas	EU 4
+HND02	70802	Honduras	LATAM	Central America	Tigo Honduras	EU 4
+ISLNO	27411	Iceland	Europe	Europe	Nova ehf.	EU 4
+JPNKI	44051	Japan	APAC	Asia	KDDI Corporation	EU 4
+KORLU	45006	South Korea	APAC	Asia	LG Uplus, Corp.	EU 4
+LIEVE	29502	Liechtenstein	Europe	Europe	Salt Liechtenstein	EU 4
+MLTMM	27877	Malta	Europe	Europe	Melita Ltd	EU 4
+YUGPM	22002	Montenegro	Europe	Europe	One Montenegro	EU 4
+THACT	52000	Thailand	APAC	Asia	National Telecom Public Company Limited	EU 4
+THACO	52099	Thailand	APAC	Asia	True Move H Universal Communication Co., Ltd	EU 4
+THADT	52005	Thailand	APAC	Asia	True Move H Universal Communication Co., Ltd	EU 4
+UGAOR	64114	Uganda	Africa	Africa	Africell Uganda Limited	EU 4
+USAUF	311588	United States	North America	North America	United States Cellular Corporation	US 2
+USACG	310410	United States	North America	North America	AT&T Mobility	US 2
+USAVZ	311480	United States	North America	North America	Verizon	US 2
+USAKY	312130	United States	North America	North America	Appalachian	US 2
+USA1E	310130	United States	North America	North America	Carolina West	US 2
+USAJV	310920	United States	North America	North America	James Valley	US 2
+USA6G	312420	United States	North America	North America	Nex Tech	US 2
+USAUW	311650	United States	North America	North America	United Wireless	US 2
+USACI	310450	United States	North America	North America	Viaero	US 2
+USACM	311230	United States	North America	North America	C-Spire	US 2
+USAPA	311450	United States	North America	North America	PTCI/PanHandle	US 2
+USA01	311670	United States	North America	North America	Pine Belt Cellular	US 2
+PRICL	330110	Puerto Rico	North America	North America	Claro Puerto Rico	US 2
+USAVT	311990	United States	North America	North America	V-Tel	US 2
+USAXC	310580	United States	North America	North America	Inland	US 2
+USASN	312290	United States	North America	North America	Strata-Snake River (Eagle Telephone)	US 2
+USAC6	312380	United States	North America	North America	Copper Valley	US 2
+USASK	313010	United States	North America	North America	Cross Tel/Bravado Wireless	US 2
