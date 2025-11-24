@@ -41,7 +41,7 @@ export default function Home() {
     let counties = [];
 
     try {
-      // Get ZIP center
+      // 1. Get ZIP center
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
       );
@@ -51,7 +51,7 @@ export default function Home() {
       const centerLat = parseFloat(places[0].lat);
       const centerLon = parseFloat(places[0].lon);
 
-      // Ultra-safe 25-box fan-out — never exceeds 4 km²
+      // 2. Ultra-safe 25-box fan-out — never hits 4 km² limit
       const offsetKm = 1.8;     // 1.8 km per side → max 3.24 km²
       const gridSize = 5;       // 5×5 = 25 boxes → ~18 km diameter
 
@@ -82,7 +82,7 @@ export default function Home() {
         }
       }
 
-      // Loose 4G check — accepts untagged towers as likely 4G in cities
+      // 3. Loose 4G + your IMSI = green
       for (const c of allCells) {
         const isLikely4G = !c.radio || c.radio === "LTE" || c.radio === "LTECATM";
         if (!isLikely4G) continue;
@@ -105,7 +105,7 @@ export default function Home() {
         return;
       }
 
-      // FCC fallback
+      // 4. FCC fallback
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
@@ -173,7 +173,7 @@ export default function Home() {
               <ul style={{ lineHeight: 1.7 }}>
                 {result.providers.map((p, i) => (
                   <li key={i}>
-                    {p.provider_name || "Unknown} {p.provider_id && `(${p.provider_id})`}
+                    {p.provider_name || "Unknown"} {p.provider_id && `(${p.provider_id})`}
                   </li>
                 ))}
               </ul>
