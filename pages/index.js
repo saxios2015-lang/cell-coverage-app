@@ -47,13 +47,12 @@ export default function Home() {
       );
       const places = await geoRes.json();
       if (places.length === 0) throw new Error("ZIP not found");
-
       const centerLat = parseFloat(places[0].lat);
       const centerLon = parseFloat(places[0].lon);
 
-      // Ultra-safe 25-box fan-out — never exceeds 4 km²
-      const offsetKm = 1.5;     // ← 100% safe everywhere
-      const gridSize = 5;       // 5×5 = 25 boxes
+      // 25-box fan-out — 1.5 km per side = 100% safe
+      const offsetKm = 1.5;
+      const gridSize = 5;
 
       const kmPerDegLat = 111.32;
       const kmPerDegLon = 40075 * Math.cos((centerLat * Math.PI) / 180) / 360;
@@ -82,7 +81,7 @@ export default function Home() {
         }
       }
 
-      // Accept ANY tower that has your IMSI — we already know it's 4G in 2025
+      // THIS IS THE WINNING LINE — NO MORE FILTERS
       for (const c of allCells) {
         if (c.mcc && c.mnc) {
           const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
