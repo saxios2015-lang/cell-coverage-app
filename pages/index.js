@@ -5,33 +5,26 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
 
-  const [eu2Set, setEu2Set] = useState(new Set());
-  const [us2Set, setUs2Set] = useState(new Set());
+  const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load IMSI CSV once
+  // Load your IMSI list once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
       .then((text) => {
-        const eu2 = new Set();
-        const us2 = new Set();
+        const set = new Set();
         const lines = text.split("\n");
-
         for (const line of lines) {
           const cols = line.split(",");
           if (cols.length < 7) continue;
           const plmn = cols[0]?.trim();
-          const imsiProvider = cols[6]?.trim();
-
-          if (plmn && plmn.length === 5) {
-            if (imsiProvider === "EU 2") eu2.add(plmn);
-            if (imsiProvider === "US 2") us2.add(plmn);
+          const group = cols[6]?.trim();
+          if (plmn && plmn.length === 5 && (group === "EU 2" || group === "US 2")) {
+            set.add(plmn);
           }
         }
-        setEu2Set(eu2);
-        setUs2Set(us2);
-      })
-      .catch(() => console.log("Could not load IMSI CSV"));
+        setSupportedPlmns(set);
+      });
   }, []);
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
@@ -43,13 +36,12 @@ export default function Home() {
     setLoading(true);
     setResult(null);
 
-    let hasTg3Support = false;
-    let providers = [];
-    let counties = [];
-    let fourGTowers = 0;
+    let hasTg3Coverage = false;
+    let fccProviders = [];
+    let fccCounties = [];
 
     try {
-      // 1. OpenCelliD towers (filter for 4G/LTE only)
+      // 1. OpenCelliD — only 4G + supported IMSI = success
       const ocidRes = await fetch(`/api/cells?zip=${zip}`, { cache: "no-store" });
       let cells = [];
       if (ocidRes.ok) {
@@ -59,63 +51,45 @@ export default function Home() {
         } catch {}
       }
 
-      // Count 4G towers and check IMSI match
-      for (const c of cells) {
-        if (c.radio && (c.radio === "LTE" || c.radio === "LTECATM")) {
-          fourGTowers++;
-          if (c.mcc && c.mnc) {
-            const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
-            if (eu2Set.has(plmn) || us2Set.has(plmn)) {
-              hasTg3Support = true;
-              break;
-            }
+      for (const cell of cells) {
+        const is4G = cell.radio === "LTE" || cell.radio === "LTECATM";
+        if (!is4G) continue;
+
+        if (cell.mcc && cell.mnc) {
+          const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
+          if (supportedPlmns.has(plmn)) {
+            hasTg3Coverage = true;
+            break;
           }
         }
       }
 
-      if (hasTg3Support) {
+      // If we found 4G + supported → we're done
+      if (hasTg3Coverage) {
         setResult({
           supported: true,
-          message: `Great news! Your TG3 will have 4G service in this ZIP (found ${fourGTowers} LTE tower${fourGTowers === 1 ? "" : "s"} matching our networks)`,
+          message: "Great news! Your TG3 will have coverage in this ZIP",
         });
         setLoading(false);
         return;
       }
 
-      // 2. FCC fallback
+      // 2. No TG3 coverage → fall back to FCC to show who IS there
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
-        providers = data.providers || [];
-        counties = data.counties || [];
-
-        // Name-based check for supported networks (assuming they have 4G)
-        const names = providers.map((p) => (p.provider_name || "").toLowerCase());
-        if (
-          names.some(
-            (n) =>
-              n.includes("at&t") ||
-              n.includes("verizon") ||
-              n.includes("t-mobile") ||
-              n.includes("us cellular") ||
-              n.includes("gci")
-          )
-        ) {
-          hasTg3Support = true;
-        }
+        fccProviders = data.providers || [];
+        fccCounties = data.counties || [];
       }
     } catch (err) {
       console.error(err);
     }
 
     setResult({
-      supported: hasTg3Support,
-      message: hasTg3Support
-        ? "Great news! Your TG3 will have 4G service in this ZIP"
-        : "Unfortunately your TG3 won't have 4G coverage in this ZIP (TG3 is 4G-only)",
-      providers,
-      counties,
-      fourGTowers,  // For display if needed
+      supported: false,
+      message: "Likely no coverage for TG3 in your area",
+      providers: fccProviders,
+      counties: fccCounties,
     });
 
     setLoading(false);
@@ -123,7 +97,7 @@ export default function Home() {
 
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      <h1>TG3 ZIP Coverage Checker (4G Only)</h1>
+      <h1>TG3 Coverage Checker</h1>
 
       <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "30px 0" }}>
         <input
@@ -150,30 +124,32 @@ export default function Home() {
       </form>
 
       {result && (
-        <div
-          style={{
-            fontSize: 24,
-            fontWeight: "bold",
-            margin: "40px 0 20px",
-            color: result.supported ? "#0a9928" : "#c22",
-          }}
-        >
-          {result.message}
-        </div>
-      )}
+        <>
+          <div
+            style={{
+              fontSize: 26,
+              fontWeight: "bold",
+              margin: "40px 0 20px",
+              color: result.supported ? "#0a9928" : "#d32f2f",
+            }}
+          >
+            {result.message}
+          </div>
 
-      {result?.providers?.length > 0 && (
-        <div>
-          <h3>Providers found in {zip} (FCC data)</h3>
-          {result.counties?.length > 0 && <p><strong>County:</strong> {result.counties.join(", ")}</p>}
-          <ul style={{ lineHeight: 1.6 }}>
-            {result.providers.map((p, i) => (
-              <li key={i}>
-                {p.provider_name || "Unknown"} {p.provider_id && `(${p.provider_id})`}
-              </li>
-            ))}
-          </ul>
-        </div>
+          {result.providers?.length > 0 && (
+            <div>
+              <h3>Providers in {zip} (but not supported by TG3)</h3>
+              {result.counties?.length > 0 && <p><strong>County:</strong> {result.counties.join(", ")}</p>}
+              <ul style={{ lineHeight: 1.7 }}>
+                {result.providers.map((p, i) => (
+                  <li key={i}>
+                    {p.provider_name || "Unknown provider"} {p.provider_id && `(${p.provider_id})`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
       )}
     </main>
   );
