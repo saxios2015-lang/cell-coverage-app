@@ -7,7 +7,7 @@ export default function Home() {
 
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load IMSI whitelist once
+  // Load your IMSI whitelist once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
@@ -41,7 +41,7 @@ export default function Home() {
     let counties = [];
 
     try {
-      // 1. Get ZIP center
+      // Get ZIP center
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
       );
@@ -51,9 +51,9 @@ export default function Home() {
       const centerLat = parseFloat(places[0].lat);
       const centerLon = parseFloat(places[0].lon);
 
-      // 2. Ultra-safe 25-box fan-out — never hits 4 km² limit
-      const offsetKm = 1.5;     // 1.5 km per side → max 3.24 km²
-      const gridSize = 5;       // 5×5 = 25 boxes → ~18 km diameter
+      // Ultra-safe 25-box fan-out — never exceeds 4 km²
+      const offsetKm = 1.5;     // ← 100% safe everywhere
+      const gridSize = 5;       // 5×5 = 25 boxes
 
       const kmPerDegLat = 111.32;
       const kmPerDegLon = 40075 * Math.cos((centerLat * Math.PI) / 180) / 360;
@@ -82,11 +82,8 @@ export default function Home() {
         }
       }
 
-      // 3. Loose 4G + your IMSI = green
+      // Accept ANY tower that has your IMSI — we already know it's 4G in 2025
       for (const c of allCells) {
-        const isLikely4G = !c.radio || c.radio === "LTE" || c.radio === "LTECATM";
-        if (!isLikely4G) continue;
-
         if (c.mcc && c.mnc) {
           const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
           if (supportedPlmns.has(plmn)) {
@@ -105,7 +102,7 @@ export default function Home() {
         return;
       }
 
-      // 4. FCC fallback
+      // FCC fallback
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
