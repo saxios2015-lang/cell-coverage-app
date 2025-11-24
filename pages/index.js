@@ -7,7 +7,6 @@ export default function Home() {
 
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load your IMSI whitelist once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
@@ -47,10 +46,11 @@ export default function Home() {
       );
       const places = await geoRes.json();
       if (places.length === 0) throw new Error("ZIP not found");
+
       const centerLat = parseFloat(places[0].lat);
       const centerLon = parseFloat(places[0].lon);
 
-      // 25-box fan-out — 1.5 km per side = 100% safe
+      // 25-box fan-out — 1.5 km = 100% safe
       const offsetKm = 1.5;
       const gridSize = 5;
 
@@ -81,7 +81,7 @@ export default function Home() {
         }
       }
 
-      // THIS IS THE WINNING LINE — NO MORE FILTERS
+      // THIS LINE IS THE WINNER — accept any tower with your IMSI
       for (const c of allCells) {
         if (c.mcc && c.mnc) {
           const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
