@@ -7,7 +7,7 @@ export default function Home() {
 
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load your IMSI whitelist once
+  // Load your IMSI list once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then((r) => r.text())
@@ -23,8 +23,7 @@ export default function Home() {
           }
         });
         setSupportedPlmns(set);
-      })
-      .catch(() => console.log("Could not load IMSI list"));
+      });
   }, []);
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
@@ -42,43 +41,39 @@ export default function Home() {
     let counties = [];
 
     try {
-      // 1. Get ZIP center
+      // Get ZIP center
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
       );
       const places = await geoRes.json();
       if (places.length === 0) throw new Error("ZIP not found");
+      const centerLat = places[0];
 
-      const centerLat = parseFloat(places[0].lat);
-      const centerLon = parseFloat(places[0].lon);
-
-      // 2. 9-box fan-out (15 km total) — perfect balance
+      // 9-box fan-out (15 km total)
       const offsetKm = 2.5;
       const allCells = [];
 
       for (let r = -1; r <= 1; r++) {
         for (let c = -1; c <= 1; c++) {
-          const lat1 = centerLat + r * (offsetKm / 111.32);
-          const lon1 = centerLon + c * (offsetKm / (40075 * Math.cos((centerLat * Math.PI) / 180) / 360));
+          const lat1 = parseFloat(center.lat) + r * (offsetKm / 111.32);
+          const lon1 = parseFloat(center.lon) + c * (offsetKm / (40075 * Math.cos((parseFloat(center.lat) * Math.PI) / 180) / 360));
           const lat2 = lat1 + (offsetKm / 111.32);
-          const lon2 = lon1 + (offsetKm / (40075 * Math.cos((centerLat * Math.PI) / 180) / 360));
+          const lon2 = lon1 + (offsetKm / (40075 * Math.cos((parseFloat(center.lat) * Math.PI) / 180) / 360));
 
           const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
 
-          try {
-            const res = await fetch(url);
-            if (res.ok) {
-              const data = await res.json();
-              if (Array.isArray(data.cells)) allCells.push(...data.cells);
-            }
-          } catch {}
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data.cells)) allCells.push(...data.cells);
+          }
         }
       }
 
-      // 3. Look for 4G + your IMSI — simple and reliable
+      // Only require 4G (LTE) + your exact PLMN
       for (const c of allCells) {
-        const isLikely4G = !c.radio || c.radio === "LTE" || c.radio === "LTECATM";
-        if (!isLikely4G) continue;
+        const isLTE = c.radio === "LTE" || c.radio === "LTECATM";
+        if (!isLTE) continue;
 
         if (c.mcc && c.mnc) {
           const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
@@ -89,7 +84,6 @@ export default function Home() {
         }
       }
 
-      // Great news → we're done
       if (hasTg3Coverage) {
         setResult({
           supported: true,
@@ -99,7 +93,7 @@ export default function Home() {
         return;
       }
 
-      // 4. No match → show real providers from FCC
+      // Fallback: show real providers
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
