@@ -1,0 +1,65 @@
+// pages/api/ocid.js
+export default async function handler(req, res) {
+  try {
+    const { bbox, limit = "50", format = "json" } = req.query;
+
+    if (!bbox) {
+      return res.status(400).json({ error: "Missing bbox query param" });
+    }
+
+    // Prefer a private server-side key if you have one; otherwise fall back to the public one
+    const key =
+      process.env.OCID_KEY ||
+      process.env.NEXT_PUBLIC_OCID_KEY ||
+      process.env.NEXT_PUBLIC_OCID_KEY; // keep last for safety
+
+    if (!key) {
+      return res.status(500).json({
+        error:
+          "OCID API key missing. Set OCID_KEY (preferred) or NEXT_PUBLIC_OCID_KEY in Vercel.",
+      });
+    }
+
+    const url = `https://api.opencellid.org/cell/getInArea?key=${encodeURIComponent(
+      key
+    )}&BBOX=${encodeURIComponent(bbox)}&limit=${encodeURIComponent(
+      String(limit)
+    )}&format=${encodeURIComponent(format)}`;
+
+    // Optional: short timeout so the client isn’t hanging forever
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    const upstream = await fetch(url, {
+      method: "GET",
+      signal: controller.signal,
+      // Make sure we don’t cache while debugging
+      headers: { "User-Agent": "flo-tg3-checker/1.0 (server-proxy)" },
+      cache: "no-store",
+    }).catch((err) => {
+      // fetch throws on abort/network
+      throw new Error(`Fetch error: ${err.message}`);
+    });
+
+    clearTimeout(timeout);
+
+    // Read text so we can pass through even if not JSON
+    const bodyText = await upstream.text();
+
+    // Pass through status and a normalized body
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    res.status(upstream.status);
+
+    // Try JSON first; if it fails, return text
+    try {
+      const json = JSON.parse(bodyText);
+      return res.json(json);
+    } catch {
+      return res.send(bodyText);
+    }
+  } catch (err) {
+    return res
+      .status(502)
+      .json({ error: "Upstream error", detail: String(err.message || err) });
+  }
+}
