@@ -1,186 +1,249 @@
-import { useState, useEffect } from "react";
+"use client";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-export default function Home() {
-  const [zip, setZip] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [supportedPlmns, setSupportedPlmns] = useState(new Set());
+function DebugBanner({ items = [], sticky = true }) {
+  if (!items.length) return null;
 
-  // Load your IMSI list
-  useEffect(() => {
-    fetch("/data/IMSI_data_tg3.csv")
-      .then(r => r.text())
-      .then(text => {
-        const set = new Set();
-        text.split("\n").forEach(line => {
-          const cols = line.split(",");
-          if (cols.length < 7) return;
-          const plmn = cols[0]?.trim();
-          const group = cols[6]?.trim();
-          if (plmn && plmn.length === 5 && (group === "EU 2" || group === "US 2")) {
-            set.add(plmn);
-          }
-        });
-        setSupportedPlmns(set);
-      });
-  }, []);
-
-  // YOUR REAL KEY — hard-coded
-  const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab";
-
-  const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
-
-  // VERSION v2.0 — you will see this at the top
-  const APP_VERSION = "v2.0";
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (zip.length !== 5 || isNaN(zip)) return;
-
-    setLoading(true);
-    setResult(null);
-
-    let hasTg3Coverage = false;
-    let providers = [];
-    let counties = [];
-
-    try {
-      // FCC fallback
-      const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
-      if (fccRes.ok) {
-        const data = await fccRes.json();
-        providers = data.providers || [];
-        counties = data.counties || [];
-      }
-
-      // OpenCelliD — 9-box fan-out
-      const geoRes = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
-      );
-      const places = await geoRes.json();
-      if (places.length > 0) {
-        const lat = parseFloat(places[0].lat);
-        const lon = parseFloat(places[0].lon);
-        const offsetKm = 1.5;
-
-        for (let r = -1; r <= 1; r++) {
-          for (let c = -1; c <= 1; c++) {
-            const kmPerDegLon = 40075 * Math.cos((lat * Math.PI) / 180) / 360;
-            const lat1 = lat + r * (offsetKm / 111.32);
-            const lon1 = lon + c * (offsetKm / kmPerDegLon);
-            const lat2 = lat1 + (offsetKm / 111.32);
-            const lon2 = lon1 + (offsetKm / kmPerDegLon);
-
-            const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
-
-            const res = await fetch(url);
-            if (res.ok) {
-              const data = await res.json();
-              if (Array.isArray(data.cells)) {
-                for (const cell of data.cells) {
-                  if (cell.mcc && cell.mnc) {
-                    const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
-                    if (supportedPlmns.has(plmn)) {
-                      hasTg3Coverage = true;
-                      break;
-                    }
-                  }
-                }
-              }
-            }
-            if (hasTg3Coverage) break;
-          }
-          if (hasTg3Coverage) break;
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    }
-
-    setResult({
-      supported: hasTg3Coverage,
-      message: hasTg3Coverage
-        ? "Great news! Your TG3 will have 4G coverage in this ZIP"
-        : "No TG3 coverage found in this ZIP",
-      providers,
-      counties,
-    });
-
-    setLoading(false);
-  };
+  const bg = (level) =>
+    level === "error" ? "#fee2e2" : level === "warn" ? "#fef3c7" : "#e0f2fe";
+  const border = (level) =>
+    level === "error" ? "#ef4444" : level === "warn" ? "#f59e0b" : "#0284c7";
 
   return (
-    <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      {/* v2.0 BANNER — IMPOSSIBLE TO MISS */}
-      <div style={{
-        background: "#c62828",
-        color: "white",
-        padding: "16px",
-        textAlign: "center",
-        fontSize: "22px",
-        fontWeight: "bold",
-        position: "fixed",
+    <div
+      style={{
+        position: sticky ? "sticky" : "static",
         top: 0,
-        left: 0,
-        right: 0,
+        zIndex: 1000,
         width: "100%",
-        zIndex: 9999,
-      }}>
-        TG3 Coverage Checker — {APP_VERSION} — {new Date().toDateString()}
-      </div>
-
-      <h1>TG3 Coverage Checker (4G Only) — {APP_VERSION}</h1>
-
-      <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "90px 0 30px" }}>
-        <input
-          value={zip}
-          onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
-          placeholder="Enter 5-digit ZIP"
-          style={{ padding: 12, fontSize: 18, borderRadius: 8, border: "1px solid #ccc", width: 240 }}
-        />
-        <button
-          type="submit"
-          disabled={loading || zip.length !== 5}
+        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+      }}
+    >
+      {items.map((it, idx) => (
+        <div
+          key={idx}
           style={{
-            padding: "12px 32px",
-            fontSize: 18,
-            background: "#0070f3",
-            color: "white",
-            border: "none",
-            borderRadius: 8,
+            background: bg(it.level),
+            borderBottom: `1px solid ${border(it.level)}`,
+            padding: "10px 14px",
+            fontFamily:
+              "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace",
+            fontSize: 13,
+            lineHeight: 1.3,
           }}
         >
-          {loading ? "Checking…" : "Check"}
+          <strong style={{ textTransform: "uppercase", marginRight: 8 }}>
+            {it.level}
+          </strong>
+          <span>{it.message}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function Home() {
+  const [debugItems, setDebugItems] = useState([]);
+  const [supportedPlmns, setSupportedPlmns] = useState(new Set());
+  const [zip, setZip] = useState("");
+  const [filteredTowers, setFilteredTowers] = useState([]);
+
+  const addDebug = useCallback((level, message) => {
+    console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
+      "[DEBUG]",
+      message
+    );
+    setDebugItems((prev) => [...prev, { level, message }]);
+  }, []);
+
+  const debugEnabled = useMemo(() => {
+    if (typeof window === "undefined") return true;
+    return new URLSearchParams(window.location.search).get("debug") === "1";
+  }, []);
+
+  // --- CSV Loader with normalization fix ---
+  const loadSupportedPlmns = useCallback(async () => {
+    try {
+      const res = await fetch("/data/IMSI_data_tg3.csv", { cache: "no-store" });
+      if (!res.ok) {
+        addDebug("error", `CSV fetch failed: ${res.status} ${res.statusText}`);
+        return;
+      }
+
+      const text = await res.text();
+      const set = new Set();
+      let parsed = 0;
+      for (const line of text.split(/\r?\n/)) {
+        if (!line || /^(\s*#|PLMN|MCC)/i.test(line)) continue;
+        const cols = line.split(",");
+        const plmn = cols[0]?.trim();
+        const group = cols[6]?.trim();
+
+        const raw = (plmn || "").replace(/\D/g, "");
+        if ((group === "EU 2" || group === "US 2") && (raw.length === 5 || raw.length === 6)) {
+          const mcc = raw.slice(0, 3);
+          const mnc = raw.slice(3);
+          const canonical = mcc + mnc.padStart(3, "0");
+          set.add(canonical);
+          parsed++;
+        }
+      }
+
+      setSupportedPlmns(set);
+      addDebug(
+        set.size ? "info" : "warn",
+        `CSV loaded: ${parsed} rows parsed, ${set.size} PLMNs in whitelist (normalized to 6 digits).`
+      );
+    } catch (e) {
+      addDebug("error", `CSV parse error: ${e?.message || e}`);
+    }
+  }, [addDebug]);
+
+  useEffect(() => {
+    loadSupportedPlmns();
+  }, [loadSupportedPlmns]);
+
+  // --- Geocoding ---
+  const geocodeZip = useCallback(
+    async (zip) => {
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=US&format=json&limit=1`;
+        const res = await fetch(url, {
+          headers: { "User-Agent": "toast-debug-app/1.0 (email@example.com)" },
+        });
+        if (!res.ok) throw new Error(`Geocode HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.length) {
+          addDebug("warn", `No geocode results for ZIP ${zip}`);
+          return null;
+        }
+        const { lat, lon } = data[0];
+        addDebug("info", `Geocode success: ZIP ${zip} → lat ${lat}, lon ${lon}`);
+        return { lat, lon };
+      } catch (err) {
+        addDebug("error", `Geocode failed for ZIP ${zip}: ${err?.message}`);
+        return null;
+      }
+    },
+    [addDebug]
+  );
+
+  // --- Fetch towers from OpenCelliD ---
+  const fetchOpenCellId = useCallback(
+    async (lat, lon) => {
+      try {
+        const bbox = `${lon - 0.01},${lat - 0.01},${lon + 0.01},${lat + 0.01}`;
+        const apiKey = process.env.NEXT_PUBLIC_OCID_KEY; // ✅ updated to match your Vercel variable
+        const url = `https://api.opencellid.org/cell/getInArea?key=${apiKey}&BBOX=${bbox}&limit=50&format=json`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`OpenCellID HTTP ${res.status}`);
+        const data = await res.json();
+        const cells = Array.isArray(data?.cells) ? data.cells : data;
+        addDebug("info", `OpenCellID returned ${cells.length} towers for bbox ${bbox}`);
+        return cells;
+      } catch (err) {
+        addDebug("error", `OpenCellID fetch failed: ${err?.message}`);
+        return [];
+      }
+    },
+    [addDebug]
+  );
+
+  // --- Filter towers by PLMN ---
+  const filterCellsByPlmn = useCallback(
+    (cells) => {
+      const before = cells.length;
+      const filtered = cells.filter((cell) => {
+        const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
+        return supportedPlmns.has(plmn);
+      });
+      addDebug(
+        before ? "info" : "warn",
+        `Filter by PLMN: ${before} → ${filtered.length} after whitelist (${supportedPlmns.size} PLMNs).`
+      );
+      return filtered;
+    },
+    [supportedPlmns, addDebug]
+  );
+
+  // --- Master handler ---
+  const handleCheck = useCallback(async () => {
+    setFilteredTowers([]);
+    setDebugItems([]);
+    if (!zip.trim()) {
+      addDebug("warn", "Please enter a ZIP code.");
+      return;
+    }
+
+    const coords = await geocodeZip(zip.trim());
+    if (!coords) {
+      addDebug("error", "Geocode failed; aborting tower fetch.");
+      return;
+    }
+
+    const towers = await fetchOpenCellId(coords.lat, coords.lon);
+    if (!towers.length) {
+      addDebug("warn", "No towers returned from OpenCellID.");
+    }
+
+    const filtered = filterCellsByPlmn(towers);
+    setFilteredTowers(filtered);
+
+    addDebug(
+      filtered.length ? "info" : "warn",
+      filtered.length
+        ? `✅ Found ${filtered.length} TG3-compatible towers near ${zip}.`
+        : "❌ No TG3 towers found (check CSV normalization or bbox range)."
+    );
+  }, [zip, geocodeZip, fetchOpenCellId, filterCellsByPlmn, addDebug]);
+
+  return (
+    <main style={{ padding: 20, fontFamily: "sans-serif" }}>
+      {debugEnabled && <DebugBanner items={debugItems} />}
+
+      <h1 style={{ fontSize: 20, marginBottom: 8 }}>FloLive / TG3 Coverage Checker</h1>
+      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        <input
+          type="text"
+          value={zip}
+          onChange={(e) => setZip(e.target.value)}
+          placeholder="Enter ZIP code (e.g. 02135)"
+          style={{
+            border: "1px solid #ccc",
+            padding: "8px 10px",
+            borderRadius: 6,
+            fontSize: 14,
+          }}
+        />
+        <button
+          onClick={handleCheck}
+          style={{
+            background: "#0284c7",
+            color: "white",
+            border: "none",
+            padding: "8px 14px",
+            borderRadius: 6,
+            cursor: "pointer",
+          }}
+        >
+          Check
         </button>
-      </form>
+      </div>
 
-      {result && (
-        <>
-          <div
-            style={{
-              fontSize: 26,
-              fontWeight: "bold",
-              margin: "40px 0 20px",
-              color: result.supported ? "#0a9928" : "#d32f2f",
-            }}
-          >
-            {result.message}
-          </div>
-
-          {result.providers?.length > 0 && (
-            <div>
-              <h3>Providers in {zip} {result.supported ? "(TG3 supported)" : "(not supported by TG3)"}</h3>
-              {result.counties?.length > 0 && <p><strong>County:</strong> {result.counties.join(", ")}</p>}
-              <ul style={{ lineHeight: 1.7 }}>
-                {result.providers.map((p, i) => (
-                  <li key={i}>
-                    {p.provider_name || "Unknown"} {p.provider_id && `(${p.provider_id})`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </>
+      {filteredTowers.length > 0 && (
+        <div>
+          <h2 style={{ fontSize: 16, marginBottom: 6 }}>
+            Found {filteredTowers.length} matching towers
+          </h2>
+          <ul style={{ fontSize: 13, lineHeight: 1.4 }}>
+            {filteredTowers.slice(0, 10).map((t, i) => (
+              <li key={i}>
+                MCC: {t.mcc}, MNC: {t.mnc}, LAC: {t.lac}, CID: {t.cid}
+              </li>
+            ))}
+          </ul>
+          {filteredTowers.length > 10 && <p>...and more</p>}
+        </div>
       )}
     </main>
   );
