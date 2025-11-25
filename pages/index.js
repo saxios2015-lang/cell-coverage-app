@@ -7,7 +7,7 @@ export default function Home() {
 
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load your IMSI list
+  // Load your IMSI whitelist once
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then(r => r.text())
@@ -26,9 +26,14 @@ export default function Home() {
       });
   }, []);
 
+  // HARD-CODED — change only if you get a new key
+  const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab";
+
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
-  // YOUR KEY HARD-CODED — CHANGE ONLY THIS LINE
-  const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab"; // ← PUT YOUR KEY HERE
+
+  // VERSION INFO
+  const APP_VERSION = "v1.0";
+  const BUILD_DATE = "2025-11-24";
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -50,7 +55,7 @@ export default function Home() {
         counties = data.counties || [];
       }
 
-      // OpenCelliD — 9-box fan-out
+      // OpenCelliD fan-out
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
       );
@@ -60,35 +65,37 @@ export default function Home() {
         const lon = parseFloat(places[0].lon);
         const offsetKm = 1.5;
 
-        for (let r = -1; r <= 1; r++) {
-          for (let c = -1; c <= 1; c++) {
-            const kmPerDegLon = 40075 * Math.cos((lat * Math.PI) / 180) / 360;
-            const lat1 = lat + r * (offsetKm / 111.32);
-            const lon1 = lon + c * (offsetKm / kmPerDegLon);
-            const lat2 = lat1 + (offsetKm / 111.32);
-            const lon2 = lon1 + (offsetKm / kmPerDegLon);
+        for (async () => {
+          for (let r = -1; r <= 1; r++) {
+            for (let c = -1; c <= 1; c++) {
+              const kmPerDegLon = 40075 * Math.cos((lat * Math.PI) / 180) / 360;
+              const lat1 = lat + r * (offsetKm / 111.32);
+              const lon1 = lon + c * (offsetKm / kmPerDegLon);
+              const lat2 = lat1 + (offsetKm / 111.32);
+              const lon2 = lon1 + (offsetKm / kmPerDegLon);
 
-            const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
+              const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
 
-            const res = await fetch(url);
-            if (res.ok) {
-              const data = await res.json();
-              if (Array.isArray(data.cells)) {
-                for (const cell of data.cells) {
-                  if (cell.mcc && cell.mnc) {
-                    const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
-                    if (supportedPlmns.has(plmn)) {
-                      hasTg3Coverage = true;
-                      break;
+              const res = await fetch(url);
+              if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data.cells)) {
+                  for (const cell of data.cells) {
+                    if (cell.mcc && cell.mnc) {
+                      const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
+                      if (supportedPlmns.has(plmn)) {
+                        hasTg3Coverage = true;
+                        break;
+                      }
                     }
                   }
                 }
               }
+              if (hasTg3Coverage) break;
             }
             if (hasTg3Coverage) break;
           }
-          if (hasTg3Coverage) break;
-        }
+        })();
       }
     } catch (err) {
       console.error(err);
@@ -108,9 +115,26 @@ export default function Home() {
 
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      <h1>TG3 Coverage Checker (4G Only)</h1>
+      {/* VERSION BANNER — PROOF YOU'RE ON THE RIGHT BUILD */}
+      <div style={{
+        background: "#ff1744",
+        color: "white",
+        padding: "12px",
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: "18px",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999,
+      }}>
+        TG3 Coverage Checker — {APP_VERSION} — Built {BUILD_DATE}
+      </div>
 
-      <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "30px 0" }}>
+      <h1>TG3 Coverage Checker (4G Only) — {APP_VERSION}</h1>
+
+      <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "80px 0 30px" }}>
         <input
           value={zip}
           onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
