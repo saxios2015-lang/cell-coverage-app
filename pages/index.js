@@ -4,6 +4,7 @@ export default function Home() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
   // Load your IMSI list
@@ -22,22 +23,12 @@ export default function Home() {
           }
         });
         setSupportedPlmns(set);
-      })
-      .catch(() => console.log("Failed to load IMSI CSV"));
+      });
   }, []);
 
-  // YOUR REAL KEYS — change these once and you're done forever
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
-  const OCID_KEY = "pk.your_real_opencellid_key_here"; // ← PASTE YOUR KEY HERE
-
-  // Debug: show key status on load
-  useEffect(() => {
-    if (!OCID_KEY || OCID_KEY.includes("your_real")) {
-      console.error("OPEN CELL ID KEY IS MISSING — app will not use tower data");
-    } else {
-      console.log("OpenCelliD key loaded:", OCID_KEY.slice(0, 10) + "...");
-    }
-  }, []);
+  // YOUR KEY HARD-CODED — CHANGE ONLY THIS LINE
+  const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab"; // ← PUT YOUR KEY HERE
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -51,7 +42,7 @@ export default function Home() {
     let counties = [];
 
     try {
-      // 1. Always get FCC data
+      // FCC fallback
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
@@ -59,53 +50,48 @@ export default function Home() {
         counties = data.counties || [];
       }
 
-      // 2. OpenCelliD only if key exists
-      if (OCID_KEY && !OCID_KEY.includes("your_real")) {
-        const geoRes = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
-        );
-        const places = await geoRes.json();
-        if (places.length > 0) {
-          const lat = parseFloat(places[0].lat);
-          const lon = parseFloat(places[0].lon);
+      // OpenCelliD — 9-box fan-out
+      const geoRes = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
+      );
+      const places = await geoRes.json();
+      if (places.length > 0) {
+        const lat = parseFloat(places[0].lat);
+        const lon = parseFloat(places[0].lon);
+        const offsetKm = 1.5;
 
-          const offsetKm = 1.5;
-          const allCells = [];
+        for (let r = -1; r <= 1; r++) {
+          for (let c = -1; c <= 1; c++) {
+            const kmPerDegLon = 40075 * Math.cos((lat * Math.PI) / 180) / 360;
+            const lat1 = lat + r * (offsetKm / 111.32);
+            const lon1 = lon + c * (offsetKm / kmPerDegLon);
+            const lat2 = lat1 + (offsetKm / 111.32);
+            const lon2 = lon1 + (offsetKm / kmPerDegLon);
 
-          for (let r = -1; r <= 1; r++) {
-            for (let c = -1; c <= 1; c++) {
-              const kmPerDegLon = 40075 * Math.cos((lat * Math.PI) / 180) / 360;
-              const lat1 = lat + r * (offsetKm / 111.32);
-              const lon1 = lon + c * (offsetKm / kmPerDegLon);
-              const lat2 = lat1 + (offsetKm / 111.32);
-              const lon2 = lon1 + (offsetKm / kmPerDegLon);
+            const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
 
-              const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
-
-              try {
-                const res = await fetch(url);
-                if (res.ok) {
-                  const data = await res.json();
-                  if (Array.isArray(data.cells)) allCells.push(...data.cells);
+            const res = await fetch(url);
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data.cells)) {
+                for (const cell of data.cells) {
+                  if (cell.mcc && cell.mnc) {
+                    const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
+                    if (supportedPlmns.has(plmn)) {
+                      hasTg3Coverage = true;
+                      break;
+                    }
+                  }
                 }
-              } catch {}
-            }
-          }
-
-          // Any tower with your IMSI = green
-          for (const c of allCells) {
-            if (c.mcc && c.mnc) {
-              const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
-              if (supportedPlmns.has(plmn)) {
-                hasTg3Coverage = true;
-                break;
               }
             }
+            if (hasTg3Coverage) break;
           }
+          if (hasTg3Coverage) break;
         }
       }
     } catch (err) {
-      console.error("Search error:", err);
+      console.error(err);
     }
 
     setResult({
