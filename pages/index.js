@@ -6,7 +6,7 @@ export default function Home() {
   const [result, setResult] = useState(null);
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load your IMSI whitelist
+  // Load your IMSI list
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then(r => r.text())
@@ -25,12 +25,12 @@ export default function Home() {
       });
   }, []);
 
-  // HARD-CODED — your real key (safe — it's public-facing anyway)
+  // YOUR REAL KEY — hard-coded
   const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab";
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
 
-  // VERSION
+  // VERSION v2.0 — you will see this at the top
   const APP_VERSION = "v2.0";
 
   const handleSearch = async (e) => {
@@ -111,26 +111,27 @@ export default function Home() {
 
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      {/* v2.0 BANNER — PROOF YOU'RE ON THE RIGHT BUILD */}
+      {/* v2.0 BANNER — IMPOSSIBLE TO MISS */}
       <div style={{
-        background: "#ff1744",
+        background: "#c62828",
         color: "white",
-        padding: "14px",
+        padding: "16px",
         textAlign: "center",
+        fontSize: "22px",
         fontWeight: "bold",
-        fontSize: "20px",
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
+        width: "100%",
         zIndex: 9999,
       }}>
-        TG3 Coverage Checker — {APP_VERSION} — {new Date().toISOString().split("T")[0]}
+        TG3 Coverage Checker — {APP_VERSION} — {new Date().toDateString()}
       </div>
 
       <h1>TG3 Coverage Checker (4G Only) — {APP_VERSION}</h1>
 
-      <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "80px 0 30px" }}>
+      <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "90px 0 30px" }}>
         <input
           value={zip}
           onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
