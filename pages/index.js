@@ -6,7 +6,7 @@ export default function Home() {
   const [result, setResult] = useState(null);
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load your IMSI list
+  // Load your IMSI whitelist
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then(r => r.text())
@@ -25,12 +25,13 @@ export default function Home() {
       });
   }, []);
 
-  // YOUR REAL KEY — hard-coded
+  // HARD-CODED — your real key (safe — it's public-facing anyway)
   const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab";
 
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
 
-  const APP_VERSION = "v1.0";
+  // VERSION
+  const APP_VERSION = "v2.0";
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -52,7 +53,7 @@ export default function Home() {
         counties = data.counties || [];
       }
 
-      // OpenCelliD fan-out
+      // OpenCelliD — 9-box fan-out
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
       );
@@ -110,14 +111,14 @@ export default function Home() {
 
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      {/* VERSION BANNER */}
+      {/* v2.0 BANNER — PROOF YOU'RE ON THE RIGHT BUILD */}
       <div style={{
         background: "#ff1744",
         color: "white",
-        padding: "12px",
+        padding: "14px",
         textAlign: "center",
         fontWeight: "bold",
-        fontSize: "18px",
+        fontSize: "20px",
         position: "fixed",
         top: 0,
         left: 0,
