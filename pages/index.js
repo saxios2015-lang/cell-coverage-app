@@ -17,7 +17,8 @@ function DebugBanner({ items = [] }) {
             background: bg(it.level),
             borderBottom: `1px solid ${border(it.level)}`,
             padding: "8px 12px",
-            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace",
+            fontFamily:
+              "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace",
             fontSize: 13,
           }}
         >
@@ -36,7 +37,10 @@ export default function Home() {
   const [filtered, setFiltered] = useState([]);
 
   const log = useCallback((level, msg) => {
-    console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](`[${level.toUpperCase()}]`, msg);
+    console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
+      `[${level.toUpperCase()}]`,
+      msg
+    );
     setDebug((p) => [...p, { level, message: msg }]);
   }, []);
 
@@ -51,7 +55,10 @@ export default function Home() {
     try {
       const res = await fetch("/data/IMSI_data_tg3.csv", { cache: "no-store" });
       if (!res.ok) {
-        log("error", `Failed to fetch /data/IMSI_data_tg3.csv: ${res.status} ${res.statusText}`);
+        log(
+          "error",
+          `Failed to fetch /data/IMSI_data_tg3.csv: ${res.status} ${res.statusText}`
+        );
         return;
       }
       const text = await res.text();
@@ -61,7 +68,7 @@ export default function Home() {
       const lines = text.split(/\r?\n/).filter((l) => l.trim());
       const set = new Set();
 
-      // Very lenient parse: look for a group column containing "US 2" or "EU 2" and a 5–6 digit MCCMNC cell.
+      // Lenient parse: require a provider cell like "US 2" or "EU 2" and a 5–6 digit MCCMNC
       for (const line of lines) {
         const cols = line.split(delim).map((c) => c.trim());
         const providerCell = cols.find((c) => /(US\s*2|EU\s*2)/i.test(c));
@@ -70,14 +77,16 @@ export default function Home() {
 
         const mcc = mccmncCell.slice(0, 3);
         const mnc = mccmncCell.slice(3);
-        const canonical = mcc + mnc.padStart(3, "0"); // normalize to 6-digit MCC+MNC
-        set.add(canonical);
+        set.add(mcc + mnc.padStart(3, "0"));
       }
 
       setPlmns(set);
       log("info", `Loaded ${set.size} PLMNs`);
       if (!set.size) {
-        log("warn", "Whitelist ended up empty — check the TSV/CSV structure or ‘IMSI Provider’ values.");
+        log(
+          "warn",
+          "Whitelist ended up empty — check the TSV/CSV structure or ‘IMSI Provider’ values."
+        );
       }
     } catch (e) {
       log("error", `Parse error: ${e?.message || e}`);
@@ -88,7 +97,7 @@ export default function Home() {
     loadPLMNs();
   }, [loadPLMNs]);
 
-  /* ---------- Geocoding ---------- */
+  /* ---------- Geocoding (returns numbers) ---------- */
   const geocodeZip = async (zipCode) => {
     try {
       const r = await fetch(
@@ -98,7 +107,9 @@ export default function Home() {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const j = await r.json();
       if (!j.length) throw new Error("no result");
-      const { lat, lon } = j[0];
+      // Force numbers here so the BBOX math is numeric, not string concatenation.
+      const lat = Number(j[0].lat);
+      const lon = Number(j[0].lon);
       log("info", `Geocode ${zipCode} → lat ${lat}, lon ${lon}`);
       return { lat, lon };
     } catch (e) {
@@ -107,27 +118,48 @@ export default function Home() {
     }
   };
 
-  /* ---------- OpenCelliD fetch with strong diagnostics ---------- */
+  /* ---------- OpenCelliD fetch with strong diagnostics (numeric bbox) ---------- */
   const fetchOpenCellId = useCallback(
     async (lat, lon) => {
       try {
         const key = process.env.NEXT_PUBLIC_OCID_KEY; // must be set in Vercel env
         if (!key) {
-          log("error", "Environment variable NEXT_PUBLIC_OCID_KEY is missing/empty (set it in Vercel → Settings → Environment Variables).");
+          log(
+            "error",
+            "Environment variable NEXT_PUBLIC_OCID_KEY is missing/empty (set it in Vercel → Settings → Environment Variables)."
+          );
           return [];
         }
 
-        const bbox = `${lon - 0.01},${lat - 0.01},${lon + 0.01},${lat + 0.01}`;
-        const url = `https://api.opencellid.org/cell/getInArea?key=${key}&BBOX=${bbox}&limit=50&format=json`;
+        // Ensure numeric arithmetic for bbox
+        const latN = Number(lat);
+        const lonN = Number(lon);
+        const minLon = lonN - 0.01;
+        const minLat = latN - 0.01;
+        const maxLon = lonN + 0.01; // this is the one that used to concatenate as a string
+        const maxLat = latN + 0.01;
+
+        const bbox = `${minLon},${minLat},${maxLon},${maxLat}`;
+        const url = `https://api.opencellid.org/cell/getInArea?key=${key}&BBOX=${encodeURIComponent(
+          bbox
+        )}&limit=50&format=json`;
+
         const safeUrl = url.replace(key, "[REDACTED]");
-        const maskedKey = key.length > 7 ? key.slice(0, 3) + "…" + key.slice(-3) : "***";
+        const maskedKey =
+          key.length > 7 ? key.slice(0, 3) + "…" + key.slice(-3) : "***";
         log("info", `OpenCellID URL: ${safeUrl} (key ${maskedKey})`);
 
         const res = await fetch(url, { cache: "no-store" });
 
         if (!res.ok) {
           const body = await res.text().catch(() => "");
-          log("error", `OpenCellID HTTP ${res.status} ${res.statusText}. Body: ${body.slice(0, 200)}…`);
+          log(
+            "error",
+            `OpenCellID HTTP ${res.status} ${res.statusText}. Body: ${body.slice(
+              0,
+              200
+            )}…`
+          );
           return [];
         }
 
@@ -140,7 +172,11 @@ export default function Home() {
           return [];
         }
 
-        const cells = Array.isArray(data?.cells) ? data.cells : Array.isArray(data) ? data : [];
+        const cells = Array.isArray(data?.cells)
+          ? data.cells
+          : Array.isArray(data)
+          ? data
+          : [];
         log("info", `OpenCellID returned ${cells.length} towers for bbox ${bbox}`);
         return cells;
       } catch (e) {
@@ -157,7 +193,10 @@ export default function Home() {
     const filtered = cells.filter((t) =>
       plmns.has(`${t.mcc}${String(t.mnc).padStart(3, "0")}`)
     );
-    log("info", `Filter by PLMN: ${before} → ${filtered.length} after whitelist (${plmns.size} PLMNs).`);
+    log(
+      "info",
+      `Filter by PLMN: ${before} → ${filtered.length} after whitelist (${plmns.size} PLMNs).`
+    );
     if (plmns.size === 0) {
       log("error", "PLMN whitelist is empty — check parsing/group filter.");
     }
@@ -174,14 +213,19 @@ export default function Home() {
     const towers = await fetchOpenCellId(coords.lat, coords.lon);
     const filteredTowers = filterCellsByPlmn(towers);
     setFiltered(filteredTowers);
-    log(filteredTowers.length ? "info" : "warn", `Found ${filteredTowers.length} matching towers`);
+    log(
+      filteredTowers.length ? "info" : "warn",
+      `Found ${filteredTowers.length} matching towers`
+    );
   };
 
   return (
     <main style={{ padding: 20, fontFamily: "sans-serif" }}>
       <DebugBanner items={debug} />
 
-      <h1 style={{ fontSize: 36, margin: "12px 0 16px" }}>FloLive / TG3 Coverage Checker</h1>
+      <h1 style={{ fontSize: 36, margin: "12px 0 16px" }}>
+        FloLive / TG3 Coverage Checker
+      </h1>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
         <input
@@ -207,7 +251,9 @@ export default function Home() {
 
       {filtered.length > 0 && (
         <div>
-          <h2 style={{ fontSize: 18, marginBottom: 8 }}>{filtered.length} matching towers</h2>
+          <h2 style={{ fontSize: 18, marginBottom: 8 }}>
+            {filtered.length} matching towers
+          </h2>
           <ul style={{ fontSize: 13, lineHeight: 1.5 }}>
             {filtered.slice(0, 10).map((t, i) => (
               <li key={i}>
