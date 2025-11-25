@@ -4,10 +4,9 @@ export default function Home() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load your IMSI whitelist once
+  // Load IMSI CSV
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then(r => r.text())
@@ -26,14 +25,11 @@ export default function Home() {
       });
   }, []);
 
-  // HARD-CODED — change only if you get a new key
-  const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab";
-
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
+  const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab"; // ← your real key
 
-  // VERSION INFO
+  // VERSION
   const APP_VERSION = "v1.0";
-  const BUILD_DATE = "2025-11-24";
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -60,50 +56,49 @@ export default function Home() {
         `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
       );
       const places = await geoRes.json();
+
       if (places.length > 0) {
         const lat = parseFloat(places[0].lat);
         const lon = parseFloat(places[0].lon);
         const offsetKm = 1.5;
 
-        for (async () => {
-          for (let r = -1; r <= 1; r++) {
-            for (let c = -1; c <= 1; c++) {
-              const kmPerDegLon = 40075 * Math.cos((lat * Math.PI) / 180) / 360;
-              const lat1 = lat + r * (offsetKm / 111.32);
-              const lon1 = lon + c * (offsetKm / kmPerDegLon);
-              const lat2 = lat1 + (offsetKm / 111.32);
-              const lon2 = lon1 + (offsetKm / kmPerDegLon);
+        for (let r = -1; r <= 1; r++) {
+          for (let c = -1; c <= 1; c++) {
+            const kmPerDegLon = 40075 * Math.cos((lat * Math.PI) / 180) / 360;
+            const lat1 = lat + r * (offsetKm / 111.32);
+            const lon1 = lon + c * (offsetKm / kmPerDegLon);
+            const lat2 = lat1 + (offsetKm / 111.32);
+            const lon2 = lon1 + (offsetKm / kmPerDegLon);
 
-              const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
+            const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
 
-              const res = await fetch(url);
-              if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data.cells)) {
-                  for (const cell of data.cells) {
-                    if (cell.mcc && cell.mnc) {
-                      const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
-                      if (supportedPlmns.has(plmn)) {
-                        hasTg3Coverage = true;
-                        break;
-                      }
+            const res = await fetch(url);
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data.cells)) {
+                for (const cell of data.cells) {
+                  if (cell.mcc && cell.mnc) {
+                    const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
+                    if (supportedPlmns.has(plmn)) {
+                      hasTg3 = true;
+                      break;
                     }
                   }
                 }
               }
-              if (hasTg3Coverage) break;
             }
-            if (hasTg3Coverage) break;
+            if (hasTg3) break;
           }
-        })();
+          if (hasTg3) break;
+        }
       }
     } catch (err) {
       console.error(err);
     }
 
     setResult({
-      supported: hasTg3Coverage,
-      message: hasTg3Coverage
+      supported: hasTg3,
+      message: hasTg3
         ? "Great news! Your TG3 will have 4G coverage in this ZIP"
         : "No TG3 coverage found in this ZIP",
       providers,
@@ -115,7 +110,7 @@ export default function Home() {
 
   return (
     <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
-      {/* VERSION BANNER — PROOF YOU'RE ON THE RIGHT BUILD */}
+      {/* VERSION BANNER */}
       <div style={{
         background: "#ff1744",
         color: "white",
@@ -129,7 +124,7 @@ export default function Home() {
         right: 0,
         zIndex: 9999,
       }}>
-        TG3 Coverage Checker — {APP_VERSION} — Built {BUILD_DATE}
+        TG3 Coverage Checker — {APP_VERSION} — {new Date().toISOString().split("T")[0]}
       </div>
 
       <h1>TG3 Coverage Checker (4G Only) — {APP_VERSION}</h1>
