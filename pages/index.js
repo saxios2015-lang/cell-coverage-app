@@ -4,10 +4,9 @@ export default function Home() {
   const [zip, setZip] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load IMSI list
+  // Load your IMSI list
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then(r => r.text())
@@ -23,18 +22,22 @@ export default function Home() {
           }
         });
         setSupportedPlmns(set);
-      });
+      })
+      .catch(() => console.log("Failed to load IMSI CSV"));
   }, []);
 
+  // YOUR REAL KEYS — change these once and you're done forever
   const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
-  const OCID_KEY = process.env.NEXT_PUBLIC_OCID_KEY;
+  const OCID_KEY = "pk.your_real_opencellid_key_here"; // ← PASTE YOUR KEY HERE
 
-  // LOUD WARNING if key is missing
-  if (!OCID_KEY) {
-    console.error("NEXT_PUBLIC_OCID_KEY IS MISSING OR EMPTY — OpenCelliD will NOT work");
-  } else {
-    console.log("OpenCelliD key loaded:", OCID_KEY.slice(0, 10) + "...");
-  }
+  // Debug: show key status on load
+  useEffect(() => {
+    if (!OCID_KEY || OCID_KEY.includes("your_real")) {
+      console.error("OPEN CELL ID KEY IS MISSING — app will not use tower data");
+    } else {
+      console.log("OpenCelliD key loaded:", OCID_KEY.slice(0, 10) + "...");
+    }
+  }, []);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -48,7 +51,7 @@ export default function Home() {
     let counties = [];
 
     try {
-      // FCC fallback (always works)
+      // 1. Always get FCC data
       const fccRes = await fetch(`${RENDER_BACKEND}/api/providers/by-zip?zip=${zip}`);
       if (fccRes.ok) {
         const data = await fccRes.json();
@@ -56,40 +59,122 @@ export default function Home() {
         counties = data.counties || [];
       }
 
-      // OpenCelliD — only runs if key exists
-      if (!OCID_KEY) {
-        console.warn("Skipping OpenCelliD — no key");
-      } else {
-        // … your full 9-box fan-out code here (exactly as before) …
-        // (I’ll keep it short — use the same loop you already have)
-        // it will now loudly log if it runs
-      }
+      // 2. OpenCelliD only if key exists
+      if (OCID_KEY && !OCID_KEY.includes("your_real")) {
+        const geoRes = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
+        );
+        const places = await geoRes.json();
+        if (places.length > 0) {
+          const lat = parseFloat(places[0].lat);
+          const lon = parseFloat(places[0].lon);
 
-      // (your existing hasTg3Coverage logic here — unchanged)
+          const offsetKm = 1.5;
+          const allCells = [];
 
-      if (hasTg3Coverage) {
-        setResult({
-          supported: true,
-          message: "Great news! Your TG3 will have 4G coverage in this ZIP",
-        });
-      } else {
-        setResult({
-          supported: false,
-          message: "No TG3 coverage found in this ZIP",
-          providers,
-          counties,
-        });
+          for (let r = -1; r <= 1; r++) {
+            for (let c = -1; c <= 1; c++) {
+              const kmPerDegLon = 40075 * Math.cos((lat * Math.PI) / 180) / 360;
+              const lat1 = lat + r * (offsetKm / 111.32);
+              const lon1 = lon + c * (offsetKm / kmPerDegLon);
+              const lat2 = lat1 + (offsetKm / 111.32);
+              const lon2 = lon1 + (offsetKm / kmPerDegLon);
+
+              const url = `https://opencellid.org/cell/getInArea?key=${OCID_KEY}&BBOX=${lat1},${lon1},${lat2},${lon2}&format=json&limit=50`;
+
+              try {
+                const res = await fetch(url);
+                if (res.ok) {
+                  const data = await res.json();
+                  if (Array.isArray(data.cells)) allCells.push(...data.cells);
+                }
+              } catch {}
+            }
+          }
+
+          // Any tower with your IMSI = green
+          for (const c of allCells) {
+            if (c.mcc && c.mnc) {
+              const plmn = `${c.mcc}${String(c.mnc).padStart(3, "0")}`;
+              if (supportedPlmns.has(plmn)) {
+                hasTg3Coverage = true;
+                break;
+              }
+            }
+          }
+        }
       }
     } catch (err) {
       console.error("Search error:", err);
-      setResult({
-        supported: false,
-        message: "Error — check console",
-      });
     }
+
+    setResult({
+      supported: hasTg3Coverage,
+      message: hasTg3Coverage
+        ? "Great news! Your TG3 will have 4G coverage in this ZIP"
+        : "No TG3 coverage found in this ZIP",
+      providers,
+      counties,
+    });
 
     setLoading(false);
   };
 
-  // … your return() block unchanged …
+  return (
+    <main style={{ maxWidth: 720, margin: "40px auto", fontFamily: "system-ui", padding: 20 }}>
+      <h1>TG3 Coverage Checker (4G Only)</h1>
+
+      <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, margin: "30px 0" }}>
+        <input
+          value={zip}
+          onChange={(e) => setZip(e.target.value.replace(/\D/g, "").slice(0, 5))}
+          placeholder="Enter 5-digit ZIP"
+          style={{ padding: 12, fontSize: 18, borderRadius: 8, border: "1px solid #ccc", width: 240 }}
+        />
+        <button
+          type="submit"
+          disabled={loading || zip.length !== 5}
+          style={{
+            padding: "12px 32px",
+            fontSize: 18,
+            background: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: 8,
+          }}
+        >
+          {loading ? "Checking…" : "Check"}
+        </button>
+      </form>
+
+      {result && (
+        <>
+          <div
+            style={{
+              fontSize: 26,
+              fontWeight: "bold",
+              margin: "40px 0 20px",
+              color: result.supported ? "#0a9928" : "#d32f2f",
+            }}
+          >
+            {result.message}
+          </div>
+
+          {result.providers?.length > 0 && (
+            <div>
+              <h3>Providers in {zip} {result.supported ? "(TG3 supported)" : "(not supported by TG3)"}</h3>
+              {result.counties?.length > 0 && <p><strong>County:</strong> {result.counties.join(", ")}</p>}
+              <ul style={{ lineHeight: 1.7 }}>
+                {result.providers.map((p, i) => (
+                  <li key={i}>
+                    {p.provider_name || "Unknown"} {p.provider_id && `(${p.provider_id})`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
+    </main>
+  );
 }
