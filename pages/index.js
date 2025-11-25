@@ -6,7 +6,7 @@ export default function Home() {
   const [result, setResult] = useState(null);
   const [supportedPlmns, setSupportedPlmns] = useState(new Set());
 
-  // Load IMSI CSV
+  // Load your IMSI list
   useEffect(() => {
     fetch("/data/IMSI_data_tg3.csv")
       .then(r => r.text())
@@ -25,10 +25,11 @@ export default function Home() {
       });
   }, []);
 
-  const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
-  const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab"; // ← your real key
+  // YOUR REAL KEY — hard-coded
+  const OCID_KEY = "pk.7e55133a94aec3549fab3acdc2885aab";
 
-  // VERSION
+  const RENDER_BACKEND = "https://cell-coverage-app.onrender.com";
+
   const APP_VERSION = "v1.0";
 
   const handleSearch = async (e) => {
@@ -56,7 +57,6 @@ export default function Home() {
         `https://nominatim.openstreetmap.org/search?format=json&postalcode=${zip}&countrycodes=us&limit=1`
       );
       const places = await geoRes.json();
-
       if (places.length > 0) {
         const lat = parseFloat(places[0].lat);
         const lon = parseFloat(places[0].lon);
@@ -80,16 +80,16 @@ export default function Home() {
                   if (cell.mcc && cell.mnc) {
                     const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
                     if (supportedPlmns.has(plmn)) {
-                      hasTg3 = true;
+                      hasTg3Coverage = true;
                       break;
                     }
                   }
                 }
               }
             }
-            if (hasTg3) break;
+            if (hasTg3Coverage) break;
           }
-          if (hasTg3) break;
+          if (hasTg3Coverage) break;
         }
       }
     } catch (err) {
@@ -97,8 +97,8 @@ export default function Home() {
     }
 
     setResult({
-      supported: hasTg3,
-      message: hasTg3
+      supported: hasTg3Coverage,
+      message: hasTg3Coverage
         ? "Great news! Your TG3 will have 4G coverage in this ZIP"
         : "No TG3 coverage found in this ZIP",
       providers,
