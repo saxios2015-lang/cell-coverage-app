@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 /** --- Debug Banner --- */
 function DebugBanner({ items = [] }) {
@@ -44,7 +44,7 @@ export default function Home() {
     setDebug((p) => [...p, { level, message: msg }]);
   }, []);
 
-  /* ---------- PLMN whitelist loader (auto-detects delimiter) ---------- */
+  /* ---------- PLMN whitelist loader (auto-detect delimiter) ---------- */
   const detectDelimiter = (text) => {
     const commaCount = (text.match(/,/g) || []).length;
     const tabCount = (text.match(/\t/g) || []).length;
@@ -68,7 +68,7 @@ export default function Home() {
       const lines = text.split(/\r?\n/).filter((l) => l.trim());
       const set = new Set();
 
-      // Lenient parse: require a provider cell like "US 2" or "EU 2" and a 5–6 digit MCCMNC
+      // Lenient parse: require provider like "US 2" or "EU 2" + a 5–6 digit MCCMNC
       for (const line of lines) {
         const cols = line.split(delim).map((c) => c.trim());
         const providerCell = cols.find((c) => /(US\s*2|EU\s*2)/i.test(c));
@@ -97,7 +97,7 @@ export default function Home() {
     loadPLMNs();
   }, [loadPLMNs]);
 
-  /* ---------- Geocoding (returns numbers) ---------- */
+  /* ---------- Geocoding (numbers) ---------- */
   const geocodeZip = async (zipCode) => {
     try {
       const r = await fetch(
@@ -107,7 +107,6 @@ export default function Home() {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const j = await r.json();
       if (!j.length) throw new Error("no result");
-      // Force numbers here so the BBOX math is numeric, not string concatenation.
       const lat = Number(j[0].lat);
       const lon = Number(j[0].lon);
       log("info", `Geocode ${zipCode} → lat ${lat}, lon ${lon}`);
@@ -118,44 +117,28 @@ export default function Home() {
     }
   };
 
-  /* ---------- OpenCelliD fetch with strong diagnostics (numeric bbox) ---------- */
+  /* ---------- Call our server proxy instead of OCID directly ---------- */
   const fetchOpenCellId = useCallback(
     async (lat, lon) => {
       try {
-        const key = process.env.NEXT_PUBLIC_OCID_KEY; // must be set in Vercel env
-        if (!key) {
-          log(
-            "error",
-            "Environment variable NEXT_PUBLIC_OCID_KEY is missing/empty (set it in Vercel → Settings → Environment Variables)."
-          );
-          return [];
-        }
-
-        // Ensure numeric arithmetic for bbox
         const latN = Number(lat);
         const lonN = Number(lon);
         const minLon = lonN - 0.01;
         const minLat = latN - 0.01;
-        const maxLon = lonN + 0.01; // this is the one that used to concatenate as a string
+        const maxLon = lonN + 0.01;
         const maxLat = latN + 0.01;
-
         const bbox = `${minLon},${minLat},${maxLon},${maxLat}`;
-        const url = `https://api.opencellid.org/cell/getInArea?key=${key}&BBOX=${encodeURIComponent(
-          bbox
-        )}&limit=50&format=json`;
 
-        const safeUrl = url.replace(key, "[REDACTED]");
-        const maskedKey =
-          key.length > 7 ? key.slice(0, 3) + "…" + key.slice(-3) : "***";
-        log("info", `OpenCellID URL: ${safeUrl} (key ${maskedKey})`);
+        const url = `/api/ocid?bbox=${encodeURIComponent(bbox)}&limit=50&format=json`;
+        log("info", `Proxy URL: ${url}`);
 
         const res = await fetch(url, { cache: "no-store" });
+        const text = await res.text();
 
         if (!res.ok) {
-          const body = await res.text().catch(() => "");
           log(
             "error",
-            `OpenCellID HTTP ${res.status} ${res.statusText}. Body: ${body.slice(
+            `Proxy HTTP ${res.status} ${res.statusText}. Body: ${text.slice(
               0,
               200
             )}…`
@@ -165,10 +148,9 @@ export default function Home() {
 
         let data;
         try {
-          data = await res.json();
+          data = JSON.parse(text);
         } catch {
-          const body = await res.text().catch(() => "");
-          log("error", `OpenCellID returned non-JSON. Body: ${body.slice(0, 200)}…`);
+          log("error", `Proxy returned non-JSON. Body: ${text.slice(0, 200)}…`);
           return [];
         }
 
@@ -177,10 +159,10 @@ export default function Home() {
           : Array.isArray(data)
           ? data
           : [];
-        log("info", `OpenCellID returned ${cells.length} towers for bbox ${bbox}`);
+        log("info", `Proxy/OCID returned ${cells.length} towers`);
         return cells;
       } catch (e) {
-        log("error", `OpenCellID fetch failed: ${e?.message || e}`);
+        log("error", `Proxy fetch failed: ${e?.message || e}`);
         return [];
       }
     },
@@ -206,7 +188,7 @@ export default function Home() {
   /* ---------- Button handler ---------- */
   const handleCheck = async () => {
     setFiltered([]);
-    setDebug([]); // clear banner for a fresh run
+    setDebug([]); // fresh run
     if (!zip.trim()) return log("warn", "Enter a ZIP code first.");
     const coords = await geocodeZip(zip.trim());
     if (!coords) return;
