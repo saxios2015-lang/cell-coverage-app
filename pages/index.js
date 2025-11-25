@@ -1,41 +1,26 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-function DebugBanner({ items = [], sticky = true }) {
+function DebugBanner({ items = [] }) {
   if (!items.length) return null;
-
   const bg = (level) =>
     level === "error" ? "#fee2e2" : level === "warn" ? "#fef3c7" : "#e0f2fe";
   const border = (level) =>
     level === "error" ? "#ef4444" : level === "warn" ? "#f59e0b" : "#0284c7";
-
   return (
-    <div
-      style={{
-        position: sticky ? "sticky" : "static",
-        top: 0,
-        zIndex: 1000,
-        width: "100%",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-      }}
-    >
-      {items.map((it, idx) => (
+    <div style={{ position: "sticky", top: 0, zIndex: 1000 }}>
+      {items.map((it, i) => (
         <div
-          key={idx}
+          key={i}
           style={{
             background: bg(it.level),
             borderBottom: `1px solid ${border(it.level)}`,
-            padding: "10px 14px",
-            fontFamily:
-              "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace",
+            padding: "8px 12px",
+            fontFamily: "monospace",
             fontSize: 13,
-            lineHeight: 1.3,
           }}
         >
-          <strong style={{ textTransform: "uppercase", marginRight: 8 }}>
-            {it.level}
-          </strong>
-          <span>{it.message}</span>
+          <b>{it.level.toUpperCase()}:</b> {it.message}
         </div>
       ))}
     </div>
@@ -43,206 +28,143 @@ function DebugBanner({ items = [], sticky = true }) {
 }
 
 export default function Home() {
-  const [debugItems, setDebugItems] = useState([]);
-  const [supportedPlmns, setSupportedPlmns] = useState(new Set());
+  const [debug, setDebug] = useState([]);
+  const [plmns, setPlmns] = useState(new Set());
   const [zip, setZip] = useState("");
-  const [filteredTowers, setFilteredTowers] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
-  const addDebug = useCallback((level, message) => {
-    console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
-      "[DEBUG]",
-      message
-    );
-    setDebugItems((prev) => [...prev, { level, message }]);
+  const log = useCallback((level, msg) => {
+    console.log(`[${level.toUpperCase()}]`, msg);
+    setDebug((p) => [...p, { level, message: msg }]);
   }, []);
 
-  const debugEnabled = useMemo(() => {
-    if (typeof window === "undefined") return true;
-    return new URLSearchParams(window.location.search).get("debug") === "1";
-  }, []);
+  const detectDelimiter = (text) => {
+    const commaCount = (text.match(/,/g) || []).length;
+    const tabCount = (text.match(/\t/g) || []).length;
+    return tabCount > commaCount ? "\t" : ",";
+  };
 
-  // --- CSV Loader with normalization fix ---
-  const loadSupportedPlmns = useCallback(async () => {
+  const loadPLMNs = useCallback(async () => {
     try {
       const res = await fetch("/data/IMSI_data_tg3.csv", { cache: "no-store" });
       if (!res.ok) {
-        addDebug("error", `CSV fetch failed: ${res.status} ${res.statusText}`);
+        log("error", `Failed to fetch file: ${res.status}`);
         return;
       }
-
       const text = await res.text();
+      const delim = detectDelimiter(text);
+      log("info", `Detected delimiter: ${delim === "\t" ? "TAB" : "COMMA"}`);
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
       const set = new Set();
-      let parsed = 0;
-      for (const line of text.split(/\r?\n/)) {
-        if (!line || /^(\s*#|PLMN|MCC)/i.test(line)) continue;
-        const cols = line.split(",");
-        const plmn = cols[0]?.trim();
-        const group = cols[6]?.trim();
-
-        const raw = (plmn || "").replace(/\D/g, "");
-        if ((group === "EU 2" || group === "US 2") && (raw.length === 5 || raw.length === 6)) {
-          const mcc = raw.slice(0, 3);
-          const mnc = raw.slice(3);
-          const canonical = mcc + mnc.padStart(3, "0");
-          set.add(canonical);
-          parsed++;
+      for (const line of lines) {
+        const cols = line.split(delim).map((c) => c.trim());
+        const provider = cols.find((c) => /(US\s*2|EU\s*2)/i.test(c));
+        const mccmnc = cols.find((c) => /^\d{5,6}$/.test(c));
+        if (provider && mccmnc) {
+          const mcc = mccmnc.slice(0, 3);
+          const mnc = mccmnc.slice(3);
+          set.add(mcc + mnc.padStart(3, "0"));
         }
       }
-
-      setSupportedPlmns(set);
-      addDebug(
-        set.size ? "info" : "warn",
-        `CSV loaded: ${parsed} rows parsed, ${set.size} PLMNs in whitelist (normalized to 6 digits).`
-      );
+      setPlmns(set);
+      log("info", `Loaded ${set.size} PLMNs`);
     } catch (e) {
-      addDebug("error", `CSV parse error: ${e?.message || e}`);
+      log("error", `Parse error: ${e.message}`);
     }
-  }, [addDebug]);
+  }, [log]);
 
   useEffect(() => {
-    loadSupportedPlmns();
-  }, [loadSupportedPlmns]);
+    loadPLMNs();
+  }, [loadPLMNs]);
 
-  // --- Geocoding ---
-  const geocodeZip = useCallback(
-    async (zip) => {
-      try {
-        const url = `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=US&format=json&limit=1`;
-        const res = await fetch(url, {
-          headers: { "User-Agent": "toast-debug-app/1.0 (email@example.com)" },
-        });
-        if (!res.ok) throw new Error(`Geocode HTTP ${res.status}`);
-        const data = await res.json();
-        if (!data.length) {
-          addDebug("warn", `No geocode results for ZIP ${zip}`);
-          return null;
-        }
-        const { lat, lon } = data[0];
-        addDebug("info", `Geocode success: ZIP ${zip} → lat ${lat}, lon ${lon}`);
-        return { lat, lon };
-      } catch (err) {
-        addDebug("error", `Geocode failed for ZIP ${zip}: ${err?.message}`);
-        return null;
-      }
-    },
-    [addDebug]
-  );
+  const geocodeZip = async (zip) => {
+    try {
+      const r = await fetch(
+        `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=US&format=json&limit=1`
+      );
+      const j = await r.json();
+      if (!j.length) throw new Error("no result");
+      const { lat, lon } = j[0];
+      log("info", `Geocode ${zip} → lat ${lat}, lon ${lon}`);
+      return { lat, lon };
+    } catch (e) {
+      log("error", `Geocode failed: ${e.message}`);
+      return null;
+    }
+  };
 
-  // --- Fetch towers from OpenCelliD ---
-  const fetchOpenCellId = useCallback(
-    async (lat, lon) => {
-      try {
-        const bbox = `${lon - 0.01},${lat - 0.01},${lon + 0.01},${lat + 0.01}`;
-        const apiKey = process.env.NEXT_PUBLIC_OCID_KEY; // ✅ updated to match your Vercel variable
-        const url = `https://api.opencellid.org/cell/getInArea?key=${apiKey}&BBOX=${bbox}&limit=50&format=json`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`OpenCellID HTTP ${res.status}`);
-        const data = await res.json();
-        const cells = Array.isArray(data?.cells) ? data.cells : data;
-        addDebug("info", `OpenCellID returned ${cells.length} towers for bbox ${bbox}`);
-        return cells;
-      } catch (err) {
-        addDebug("error", `OpenCellID fetch failed: ${err?.message}`);
+  const fetchOCID = async (lat, lon) => {
+    try {
+      const key = process.env.NEXT_PUBLIC_OCID_KEY;
+      if (!key) {
+        log("error", "NEXT_PUBLIC_OCID_KEY missing");
         return [];
       }
-    },
-    [addDebug]
-  );
-
-  // --- Filter towers by PLMN ---
-  const filterCellsByPlmn = useCallback(
-    (cells) => {
-      const before = cells.length;
-      const filtered = cells.filter((cell) => {
-        const plmn = `${cell.mcc}${String(cell.mnc).padStart(3, "0")}`;
-        return supportedPlmns.has(plmn);
-      });
-      addDebug(
-        before ? "info" : "warn",
-        `Filter by PLMN: ${before} → ${filtered.length} after whitelist (${supportedPlmns.size} PLMNs).`
-      );
-      return filtered;
-    },
-    [supportedPlmns, addDebug]
-  );
-
-  // --- Master handler ---
-  const handleCheck = useCallback(async () => {
-    setFilteredTowers([]);
-    setDebugItems([]);
-    if (!zip.trim()) {
-      addDebug("warn", "Please enter a ZIP code.");
-      return;
+      const bbox = `${lon - 0.01},${lat - 0.01},${lon + 0.01},${lat + 0.01}`;
+      const url = `https://api.opencellid.org/cell/getInArea?key=${key}&BBOX=${bbox}&limit=50&format=json`;
+      const r = await fetch(url);
+      const j = await r.json();
+      const cells = Array.isArray(j?.cells) ? j.cells : j;
+      log("info", `OpenCellID returned ${cells.length} towers`);
+      return cells;
+    } catch (e) {
+      log("error", `OpenCellID error: ${e.message}`);
+      return [];
     }
+  };
 
-    const coords = await geocodeZip(zip.trim());
-    if (!coords) {
-      addDebug("error", "Geocode failed; aborting tower fetch.");
-      return;
-    }
-
-    const towers = await fetchOpenCellId(coords.lat, coords.lon);
-    if (!towers.length) {
-      addDebug("warn", "No towers returned from OpenCellID.");
-    }
-
-    const filtered = filterCellsByPlmn(towers);
-    setFilteredTowers(filtered);
-
-    addDebug(
-      filtered.length ? "info" : "warn",
-      filtered.length
-        ? `✅ Found ${filtered.length} TG3-compatible towers near ${zip}.`
-        : "❌ No TG3 towers found (check CSV normalization or bbox range)."
+  const handleCheck = async () => {
+    setFiltered([]);
+    setDebug([]);
+    if (!zip.trim()) return log("warn", "Enter a ZIP code first.");
+    const coords = await geocodeZip(zip);
+    if (!coords) return;
+    const towers = await fetchOCID(coords.lat, coords.lon);
+    const filteredTowers = towers.filter((t) =>
+      plmns.has(`${t.mcc}${String(t.mnc).padStart(3, "0")}`)
     );
-  }, [zip, geocodeZip, fetchOpenCellId, filterCellsByPlmn, addDebug]);
+    setFiltered(filteredTowers);
+    log(
+      filteredTowers.length ? "info" : "warn",
+      `Found ${filteredTowers.length} matching towers`
+    );
+  };
 
   return (
     <main style={{ padding: 20, fontFamily: "sans-serif" }}>
-      {debugEnabled && <DebugBanner items={debugItems} />}
-
-      <h1 style={{ fontSize: 20, marginBottom: 8 }}>FloLive / TG3 Coverage Checker</h1>
+      <DebugBanner items={debug} />
+      <h1>FloLive / TG3 Coverage Checker</h1>
       <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
         <input
-          type="text"
           value={zip}
           onChange={(e) => setZip(e.target.value)}
-          placeholder="Enter ZIP code (e.g. 02135)"
-          style={{
-            border: "1px solid #ccc",
-            padding: "8px 10px",
-            borderRadius: 6,
-            fontSize: 14,
-          }}
+          placeholder="Enter ZIP (e.g. 02135)"
+          style={{ border: "1px solid #ccc", padding: 8, borderRadius: 6 }}
         />
         <button
           onClick={handleCheck}
           style={{
             background: "#0284c7",
-            color: "white",
+            color: "#fff",
             border: "none",
-            padding: "8px 14px",
             borderRadius: 6,
-            cursor: "pointer",
+            padding: "8px 14px",
           }}
         >
           Check
         </button>
       </div>
 
-      {filteredTowers.length > 0 && (
+      {filtered.length > 0 && (
         <div>
-          <h2 style={{ fontSize: 16, marginBottom: 6 }}>
-            Found {filteredTowers.length} matching towers
-          </h2>
-          <ul style={{ fontSize: 13, lineHeight: 1.4 }}>
-            {filteredTowers.slice(0, 10).map((t, i) => (
+          <h2>{filtered.length} matching towers</h2>
+          <ul>
+            {filtered.slice(0, 10).map((t, i) => (
               <li key={i}>
                 MCC: {t.mcc}, MNC: {t.mnc}, LAC: {t.lac}, CID: {t.cid}
               </li>
             ))}
           </ul>
-          {filteredTowers.length > 10 && <p>...and more</p>}
         </div>
       )}
     </main>
